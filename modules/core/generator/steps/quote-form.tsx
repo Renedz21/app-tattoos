@@ -96,7 +96,6 @@ export default function QuoteForm({
         selectedPreview.mimeType,
       );
 
-      // Step 3: create GeneratedImage + update TattooRequest in one call
       const result = await api<SubmitQuoteResponse>(
         `/api/request/${requestId}/submit-quote`,
         {

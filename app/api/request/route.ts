@@ -8,10 +8,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
   const r = await prisma.tattooRequest.create({
-    data: {
-      status: "DRAFT",
-      ...parsed.data,
-    },
+    data: parsed.data,
     select: { id: true, trackingToken: true, status: true },
   });
 

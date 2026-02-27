@@ -2,19 +2,16 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { ArrowLeft, CheckCircle2, Clock, Circle } from "lucide-react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+import {
+  RequestStatus,
+  TattooStyle,
+  TattooSize,
+} from "@/lib/generated/prisma/enums";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-// ─── Status helpers ───────────────────────────────────────────────────────────
-
-/**
- * Each entry in the timeline, in the order the user experiences them.
- * `doneAt` comes from the TattooRequest timestamps.
- */
 type TimelineEvent = {
   key: string;
   label: string;
@@ -81,46 +78,43 @@ function formatDate(date: Date): string {
   }).format(date);
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Borrador",
-  REFERENCES_SET: "Referencias cargadas",
-  GENERATED: "Diseño generado",
-  SENT: "Solicitud enviada",
-  QUOTED: "Cotización enviada",
-  DEPOSIT_PENDING: "Esperando depósito",
-  APPOINTMENT_CONFIRMED: "Cita confirmada",
-  FINISHED: "Completado",
-  EXPIRED: "Expirado",
+const STATUS_LABELS: Record<RequestStatus, string> = {
+  [RequestStatus.SENT]: "Solicitud enviada",
+  [RequestStatus.QUOTED]: "Cotización enviada",
+  [RequestStatus.DEPOSIT_PENDING]: "Esperando depósito",
+  [RequestStatus.APPOINTMENT_CONFIRMED]: "Cita confirmada",
+  [RequestStatus.FINISHED]: "Completado",
+  [RequestStatus.EXPIRED]: "Expirado",
 };
 
-const styleLabels: Record<string, string> = {
-  FINE_LINE: "Fine Line",
-  BLACKWORK: "Blackwork",
-  REALISM: "Realismo",
-  TRADITIONAL: "Tradicional",
-  LETTERING: "Lettering",
-  MINIMAL: "Minimalista",
-  OTHER: "Otro",
+const STYLE_LABELS: Record<TattooStyle, string> = {
+  [TattooStyle.FINE_LINE]: "Fine Line",
+  [TattooStyle.BLACKWORK]: "Blackwork",
+  [TattooStyle.REALISM]: "Realismo",
+  [TattooStyle.TRADITIONAL]: "Tradicional",
+  [TattooStyle.LETTERING]: "Lettering",
+  [TattooStyle.MINIMAL]: "Minimalista",
+  [TattooStyle.OTHER]: "Otro",
 };
 
-const sizeLabels: Record<string, string> = {
-  SMALL: "Pequeño",
-  MEDIUM: "Mediano",
-  LARGE: "Grande",
-  OTHER: "Otro",
+const SIZE_LABELS: Record<TattooSize, string> = {
+  [TattooSize.SMALL]: "Pequeño",
+  [TattooSize.MEDIUM]: "Mediano",
+  [TattooSize.LARGE]: "Grande",
+  [TattooSize.OTHER]: "Otro",
 };
 
-// ─── Subcomponents ────────────────────────────────────────────────────────────
-
-function StatusBadge({ status }: { status: string }) {
-  const isActive = [
-    "SENT",
-    "QUOTED",
-    "DEPOSIT_PENDING",
-    "APPOINTMENT_CONFIRMED",
-  ].includes(status);
-  const isFinished = status === "FINISHED";
-  const isExpired = status === "EXPIRED";
+function StatusBadge({ status }: { status: RequestStatus }) {
+  const isActive = (
+    [
+      RequestStatus.SENT,
+      RequestStatus.QUOTED,
+      RequestStatus.DEPOSIT_PENDING,
+      RequestStatus.APPOINTMENT_CONFIRMED,
+    ] as RequestStatus[]
+  ).includes(status);
+  const isFinished = status === RequestStatus.FINISHED;
+  const isExpired = status === RequestStatus.EXPIRED;
 
   return (
     <span
@@ -147,7 +141,7 @@ function StatusBadge({ status }: { status: string }) {
                 : "bg-muted-foreground",
         ].join(" ")}
       />
-      {STATUS_LABELS[status] ?? status}
+      {STATUS_LABELS[status]}
     </span>
   );
 }
@@ -162,7 +156,6 @@ function TimelineStep({ event, isLast }: TimelineStepProps) {
 
   return (
     <div className="flex gap-4">
-      {/* Icon + vertical line */}
       <div className="flex flex-col items-center">
         <div
           className={[
@@ -213,16 +206,6 @@ function TimelineStep({ event, isLast }: TimelineStepProps) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
-/**
- * Resolves a TattooRequest from a slug that can be either:
- *  - a trackingToken (CUID, ~25 chars) — the canonical URL format
- *  - a requestCode  (ZT-XXXX)          — the human-readable code the user is given
- *
- * Tries trackingToken first (most common path). Falls back to requestCode
- * so the user can reach their page even if they only have their code.
- */
 const select = {
   requestCode: true,
   trackingToken: true,
@@ -242,12 +225,7 @@ const select = {
   appointmentAt: true,
   finishedAt: true,
   createdAt: true,
-  selectedImage: {
-    select: {
-      publicUrl: true,
-      r2Key: true,
-    },
-  },
+  selectedImagePublicUrl: true,
 } as const;
 async function findRequest(slug: string) {
   // 1st attempt: treat slug as trackingToken
@@ -301,7 +279,7 @@ export default async function SeguimientoPage({ params }: PageProps) {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <StatusBadge status={tr.status} />
+            {tr.status && <StatusBadge status={tr.status} />}
             <span className="font-grotesk text-xs text-muted-foreground">
               {completedSteps} de {timeline.length} etapas completadas
             </span>
@@ -309,10 +287,10 @@ export default async function SeguimientoPage({ params }: PageProps) {
         </div>
 
         {/* ── Design image ────────────────────────────────────────────── */}
-        {tr.selectedImage?.publicUrl ? (
+        {tr.selectedImagePublicUrl ? (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             <img
-              src={tr.selectedImage.publicUrl}
+              src={tr.selectedImagePublicUrl}
               alt="Diseño de tatuaje seleccionado"
               className="h-auto w-full object-contain"
             />
@@ -332,9 +310,9 @@ export default async function SeguimientoPage({ params }: PageProps) {
           </h2>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
             {[
-              { label: "Estilo", value: styleLabels[tr.style] ?? tr.style },
+              { label: "Estilo", value: STYLE_LABELS[tr.style] },
               { label: "Zona", value: tr.bodyZone },
-              { label: "Tamaño", value: sizeLabels[tr.size] ?? tr.size },
+              { label: "Tamaño", value: SIZE_LABELS[tr.size] },
               {
                 label: "Color",
                 value: tr.colorMode === "COLOR" ? "Color" : "Blanco y negro",

@@ -71,7 +71,6 @@ export async function POST(
 
   // Build base prompt, then append refineText when provided
   let prompt = buildTattooPrompt(step1, step2);
-  console.log({ prompt });
   const { refineText } = bodyResult.data;
   if (refineText) {
     prompt += `\nRefinement instruction: ${refineText}`;

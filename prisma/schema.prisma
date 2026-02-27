@@ -18,11 +18,6 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  // Relaciones inversas (no cambian Better Auth, solo ayudan a Prisma)
-  tattooRequests         TattooRequest[] @relation("UserRequests")
-  assignedTattooRequests TattooRequest[] @relation("AssignedRequests")
-  verifiedPayments       Payment[]       @relation("VerifiedPayments")
-
   @@unique([email])
   @@map("user")
 }
@@ -98,48 +93,12 @@ enum ColorMode {
 }
 
 enum RequestStatus {
-  // Antes de enviar lead
-  DRAFT
-  REFERENCES_SET
-  GENERATED
-
-  // Admin pipeline
   SENT
   QUOTED
   DEPOSIT_PENDING
   APPOINTMENT_CONFIRMED
   FINISHED
   EXPIRED
-}
-
-enum ImageKind {
-  INITIAL
-  VARIATION
-  REFINEMENT
-}
-
-enum JobType {
-  GENERATE_IMAGES
-  GENERATE_VARIATIONS
-  REFINE_IMAGE
-}
-
-enum JobStatus {
-  QUEUED
-  PROCESSING
-  DONE
-  ERROR
-  CANCELLED
-}
-
-enum AiProvider {
-  AI_STUDIO
-  VERTEX
-}
-
-enum PaymentKind {
-  DEPOSIT
-  FULL
 }
 
 enum PaymentMethod {
@@ -150,35 +109,14 @@ enum PaymentMethod {
   OTHER
 }
 
-enum PaymentStatus {
-  PENDING
-  SUBMITTED
-  CONFIRMED
-  REJECTED
-  EXPIRED
-  CANCELLED
-}
-
 model TattooRequest {
   id String @id @default(cuid())
 
-  // Visible ID tipo ZT-001 (se setea cuando se envía)
-  requestCode String? @unique
+  requestCode   String? @unique
+  trackingToken String  @unique @default(cuid())
 
-  // Token público para tracking: /t/<trackingToken>
-  trackingToken String @unique @default(cuid())
+  status RequestStatus?
 
-  status RequestStatus @default(DRAFT)
-
-  // Usuario opcional (login opcional)
-  userId String?
-  user   User?   @relation("UserRequests", fields: [userId], references: [id], onDelete: SetNull)
-
-  // Asignación a admin/staff (opcional)
-  assignedToId String?
-  assignedTo   User?   @relation("AssignedRequests", fields: [assignedToId], references: [id], onDelete: SetNull)
-
-  // Step 1
   title       String?
   style       TattooStyle @default(OTHER)
   styleOther  String?
@@ -188,28 +126,33 @@ model TattooRequest {
   colorMode   ColorMode   @default(BLACK_AND_GREY)
   detailLevel Int         @default(3)
 
-  // Step 2
   specialInstructions String?
   finalPrompt         String?
 
-  // Step 3: imagen favorita
-  selectedImageId String?
-  selectedImage   GeneratedImage? @relation("SelectedImage", fields: [selectedImageId], references: [id], onDelete: SetNull)
+  selectedImageR2Key     String?
+  selectedImagePublicUrl String?
+  selectedImageMimeType  String?
+  selectedImageSizeBytes Int?
 
-  // Step final (cotización enviada)
   fullName      String?
   whatsappE164  String?
   district      String?
   availability  String?
   extraComments String?
 
-  // Cotización admin
   currency     String    @default("PEN")
   priceCents   Int?
   depositCents Int?
   depositDueAt DateTime?
 
-  // Timeline simple (sin tabla de eventos)
+  depositMethod           PaymentMethod?
+  depositVerificationCode String?        @db.VarChar(3)
+  depositProofR2Key       String?
+  depositProofPublicUrl   String?
+  depositProofMimeType    String?
+  depositProofSizeBytes   Int?
+  depositAdminNote        String?
+
   sentAt             DateTime?
   quotedAt           DateTime?
   depositSubmittedAt DateTime?
@@ -221,12 +164,10 @@ model TattooRequest {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  referenceImages ReferenceImage[] @relation("RequestRefImages")
-  generatedImages GeneratedImage[] @relation("RequestImages")
-  jobs            GenerationJob[]  @relation("RequestJobs")
-  payments        Payment[]        @relation("RequestPayments")
+  referenceImages ReferenceImage[]
 
   @@index([status, createdAt])
+  @@index([sentAt])
   @@index([requestCode])
   @@index([fullName])
   @@index([whatsappE164])
@@ -237,9 +178,8 @@ model ReferenceImage {
   id String @id @default(cuid())
 
   requestId String
-  request   TattooRequest @relation("RequestRefImages", fields: [requestId], references: [id], onDelete: Cascade)
+  request   TattooRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
-  // R2
   r2Key     String
   publicUrl String?
   mimeType  String?
@@ -250,108 +190,6 @@ model ReferenceImage {
   @@unique([requestId, r2Key])
   @@index([requestId, createdAt])
   @@map("reference_image")
-}
-
-model GeneratedImage {
-  id String @id @default(cuid())
-
-  requestId String
-  request   TattooRequest @relation("RequestImages", fields: [requestId], references: [id], onDelete: Cascade)
-
-  // Back relation para selectedImage (Prisma lo exige)
-  selectedIn TattooRequest[] @relation("SelectedImage")
-
-  kind      ImageKind @default(INITIAL)
-  slotIndex Int?
-
-  // R2
-  r2Key     String
-  publicUrl String?
-  mimeType  String? @default("image/png")
-  sizeBytes Int?
-
-  modelName String?
-  seed      String?
-
-  // Variaciones/refine
-  parentImageId String?
-  parentImage   GeneratedImage?  @relation("ImageParent", fields: [parentImageId], references: [id], onDelete: SetNull)
-  children      GeneratedImage[] @relation("ImageParent")
-
-  // Back relation para GenerationJob.baseImage
-  baseForJobs GenerationJob[] @relation("JobBaseImage")
-
-  createdAt DateTime @default(now())
-
-  @@unique([requestId, kind, slotIndex])
-  @@index([requestId, createdAt])
-  @@map("generated_image")
-}
-
-model GenerationJob {
-  id String @id @default(cuid())
-
-  requestId String
-  request   TattooRequest @relation("RequestJobs", fields: [requestId], references: [id], onDelete: Cascade)
-
-  type   JobType
-  status JobStatus @default(QUEUED)
-
-  baseImageId String?
-  baseImage   GeneratedImage? @relation("JobBaseImage", fields: [baseImageId], references: [id], onDelete: SetNull)
-
-  provider  AiProvider @default(AI_STUDIO)
-  modelName String
-
-  attempts    Int @default(0)
-  maxAttempts Int @default(3)
-
-  runAt    DateTime  @default(now())
-  lockedAt DateTime?
-  lockedBy String?
-  error    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status, runAt])
-  @@index([requestId, createdAt])
-  @@map("generation_job")
-}
-
-model Payment {
-  id String @id @default(cuid())
-
-  requestId String
-  request   TattooRequest @relation("RequestPayments", fields: [requestId], references: [id], onDelete: Cascade)
-
-  kind   PaymentKind    @default(DEPOSIT)
-  status PaymentStatus  @default(PENDING)
-  method PaymentMethod?
-
-  currency    String @default("PEN")
-  amountCents Int
-
-  dueAt  DateTime?
-  paidAt DateTime?
-
-  // Comprobante (manual) en el MVP
-  proofR2Key     String?
-  proofUrl       String?
-  proofMimeType  String?
-  proofSizeBytes Int?
-
-  verifiedById String?
-  verifiedBy   User?     @relation("VerifiedPayments", fields: [verifiedById], references: [id], onDelete: SetNull)
-  verifiedAt   DateTime?
-  adminNote    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([requestId, createdAt])
-  @@index([status, dueAt])
-  @@map("payment")
 }
 
 model PortfolioItem {
@@ -382,7 +220,6 @@ model PortfolioImage {
   itemId String
   item   PortfolioItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
-  // R2
   r2Key     String
   publicUrl String?
   mimeType  String?

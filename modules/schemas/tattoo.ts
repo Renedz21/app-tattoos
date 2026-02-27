@@ -1,15 +1,13 @@
 import { z } from "zod";
+import {
+  TattooStyle,
+  TattooSize,
+  ColorMode,
+} from "@/lib/generated/prisma/enums";
 
-export const TattooStyleSchema = z.enum([
-  "FINE_LINE",
-  "BLACKWORK",
-  "REALISM",
-  "TRADITIONAL",
-  "LETTERING",
-  "MINIMAL",
-]);
-export const TattooSizeSchema = z.enum(["SMALL", "MEDIUM", "LARGE"]);
-export const ColorModeSchema = z.enum(["BLACK_AND_GREY", "COLOR"]);
+export const TattooStyleSchema = z.enum(TattooStyle);
+export const TattooSizeSchema = z.enum(TattooSize);
+export const ColorModeSchema = z.enum(ColorMode);
 
 export const Step1Schema = z.object({
   title: z.string().trim().min(1).max(80).optional(),
@@ -36,13 +34,11 @@ export type Step1Input = z.infer<typeof Step1Schema>;
 export type Step2Input = z.infer<typeof Step2Schema>;
 export type MasterSchemaType = z.infer<typeof masterSchema>;
 
-// ── Step 3: refine prompt sent with each preview generation ───────────────
 export const RefineSchema = z.object({
   refineText: z.string().trim().max(400).optional(),
 });
 export type RefineInput = z.infer<typeof RefineSchema>;
 
-// ── Presign selected image: client asks server for a presigned PUT URL ─────
 export const PresignSelectedSchema = z.object({
   requestId: z.string().min(10),
   mimeType: z.string().min(3),
@@ -50,15 +46,6 @@ export const PresignSelectedSchema = z.object({
 });
 export type PresignSelectedInput = z.infer<typeof PresignSelectedSchema>;
 
-// ── Complete selected: client notifies server after the R2 PUT succeeded ───
-export const CompleteSelectedSchema = z.object({
-  r2Key: z.string().min(10),
-  mimeType: z.string().min(3),
-  sizeBytes: z.number().int().positive(),
-});
-export type CompleteSelectedInput = z.infer<typeof CompleteSelectedSchema>;
-
-// ── Quote form: contact + availability data filled before final submit ──────
 export const QuoteFormSchema = z.object({
   fullName: z
     .string()
@@ -86,11 +73,8 @@ export const QuoteFormSchema = z.object({
 });
 export type QuoteFormInput = z.infer<typeof QuoteFormSchema>;
 
-// ── Submit quote: full payload sent to /api/request/:id/submit-quote ────────
 export const SubmitQuoteSchema = z.object({
-  // Contact fields (from QuoteFormSchema)
   ...QuoteFormSchema.shape,
-  // Image data (from presign-selected + R2 upload)
   r2Key: z.string().min(10),
   mimeType: z.string().min(3),
   sizeBytes: z.number().int().positive(),

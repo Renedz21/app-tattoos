@@ -17,7 +17,6 @@ export async function PUT(
     where: { id },
     data: {
       specialInstructions: parsed.data.specialInstructions,
-      status: "REFERENCES_SET",
     },
     select: { id: true, status: true },
   });

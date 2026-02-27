@@ -7,14 +7,6 @@ interface PageProps {
   searchParams: Promise<{ callbackUrl?: string }>;
 }
 
-/**
- * /admin/login — Server Component.
- *
- * If the user is already authenticated AND is in the allowlist,
- * skip the login page and send them straight to /admin (or callbackUrl).
- *
- * This prevents an already-logged-in admin from seeing the login form.
- */
 export default async function AdminLoginPage({ searchParams }: PageProps) {
   const [session, { callbackUrl }] = await Promise.all([
     getServerSession(),
