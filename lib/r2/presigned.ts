@@ -24,6 +24,9 @@ export async function presignPut(params: {
     ContentType: params.contentType,
   });
 
-  const url = await getSignedUrl(r2(), cmd, { expiresIn: params.expiresInSeconds ?? 60 });
+  // Fixed: was calling r2() which doesn't exist — correct name is r2Client()
+  const url = await getSignedUrl(r2Client(), cmd, {
+    expiresIn: params.expiresInSeconds ?? 60,
+  });
   return url;
 }

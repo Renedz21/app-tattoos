@@ -4,7 +4,8 @@ import { Button } from "@/modules/core/components/ui/button";
 
 export default function Hero() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden texture-overlay">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 bg-linear-gradient-to-b from-background via-background to-ink-medium" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 h-125 w-125 rounded-full bg-primary/5 blur-[120px]" />
       <div className="container relative z-10 flex flex-col items-center gap-8 px-4 pt-20 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm">
@@ -25,7 +26,7 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <Link href="/generar">
+          <Link href="/generator">
             <Button
               size="lg"
               className="gap-2 px-8 py-6 text-base font-grotesk font-semibold shadow-tertiary"

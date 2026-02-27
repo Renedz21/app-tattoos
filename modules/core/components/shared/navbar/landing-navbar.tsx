@@ -37,7 +37,7 @@ export default function LandingNavbar() {
           >
             Ubicación
           </a>
-          <Link href="/generar">
+          <Link href="/generator">
             <Button size="sm" className="font-grotesk font-medium">
               Generar idea con IA
             </Button>
@@ -83,7 +83,7 @@ export default function LandingNavbar() {
               className="w-full font-grotesk font-semibold"
               asChild
             >
-              <Link href="/generate" onClick={() => setOpen(false)}>
+              <Link href="/generator" onClick={() => setOpen(false)}>
                 Generar idea con IA
               </Link>
             </Button>

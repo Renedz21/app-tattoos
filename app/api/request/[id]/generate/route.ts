@@ -3,13 +3,15 @@ import { putToR2 } from "@/lib/r2/server-put"; // abajo te lo dejo
 import prisma from "@/lib/prisma";
 import { generateImages } from "@/lib/ai/generate-image";
 import { buildTattooPrompt } from "@/lib/prompts/tattoo-prompt";
-import { GenerateSchema, Step1Schema, Step2Schema } from "@/modules/schemas/tattoo";
+import { Step1Schema, Step2Schema } from "@/modules/schemas/tattoo";
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const body = await req.json()
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const body = await req.json();
   const { n } = body;
-
 
   const tr = await prisma.tattooRequest.findUnique({
     where: { id },
@@ -27,7 +29,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     colorMode: tr.colorMode,
     detailLevel: tr.detailLevel,
   });
-  const step2 = Step2Schema.parse({ specialInstructions: tr.specialInstructions ?? undefined });
+  const step2 = Step2Schema.parse({
+    specialInstructions: tr.specialInstructions ?? undefined,
+  });
 
   const job = await prisma.generationJob.create({
     data: {
@@ -44,11 +48,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const prompt = buildTattooPrompt(step1, step2);
     const images = await generateImages(prompt, n);
 
-    console.log({ images })
+    console.log({ images });
 
     return NextResponse.json({ jobId: job.id, images });
   } catch (e: any) {
-    await prisma.generationJob.update({ where: { id: job.id }, data: { status: "ERROR", error: e?.message ?? "unknown" } });
+    await prisma.generationJob.update({
+      where: { id: job.id },
+      data: { status: "ERROR", error: e?.message ?? "unknown" },
+    });
     return NextResponse.json({ error: "generation_failed" }, { status: 500 });
   }
 }
