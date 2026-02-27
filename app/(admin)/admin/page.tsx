@@ -11,9 +11,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/modules/core/components/ui/tabs";
-import HeaderText from "@/modules/core/components/shared/header-text";
 import { DataTable } from "@/modules/core/components/ui/data-table";
-import LogoutButton from "@/modules/admin/components/logout-button";
 import { columns } from "@/modules/admin/columns";
 import { adminFiltersSchema } from "@/modules/schemas/admin-filters.schema";
 import AdminFilters from "@/modules/admin/components/admin-filter";
@@ -49,14 +47,6 @@ export default async function AdminPage({ searchParams }: Props) {
       status: true,
       sentAt: true,
       createdAt: true,
-      priceCents: true,
-      bodyZone: true,
-      whatsappE164: true,
-      size: true,
-      colorMode: true,
-      specialInstructions: true,
-      styleOther: true,
-      depositCents: true, // es la seña
     },
     orderBy: {
       createdAt: "desc",
@@ -64,45 +54,34 @@ export default async function AdminPage({ searchParams }: Props) {
   });
 
   return (
-    <div className="p-6 md:p-10">
-      <div className="space-y-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <HeaderText
-            title="Panel"
-            highlightedText="Admin"
-            description="Gestiona leads y portafolio"
-            className="mb-0"
-          />
-          <LogoutButton />
-        </div>
-        <Tabs defaultValue="leads">
-          <TabsList className="bg-card border border-border/50 mb-6">
-            <TabsTrigger
-              value="leads"
-              className="font-body gap-2 data-[state=active]:text-primary"
-            >
-              <LayoutDashboard size={16} /> Leads
-            </TabsTrigger>
-            <TabsTrigger
-              value="portfolio"
-              className="font-body gap-2 data-[state=active]:text-primary"
-              disabled
-            >
-              <Image size={16} /> Portafolio
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="leads" className="space-y-6">
-            <Suspense fallback={<>Loading...</>}>
-              <AdminFilters />
-            </Suspense>
+    <>
+      <Tabs defaultValue="leads">
+        <TabsList className="bg-card border border-border/50 mb-6">
+          <TabsTrigger
+            value="leads"
+            className="font-body gap-2 data-[state=active]:text-primary"
+          >
+            <LayoutDashboard size={16} /> Leads
+          </TabsTrigger>
+          <TabsTrigger
+            value="portfolio"
+            className="font-body gap-2 data-[state=active]:text-primary"
+            disabled
+          >
+            <Image size={16} /> Portafolio
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="leads" className="space-y-6">
+          <Suspense fallback={<>Loading...</>}>
+            <AdminFilters />
+          </Suspense>
 
-            <div>
-              <DataTable columns={columns} data={data} />
-            </div>
-          </TabsContent>
-          <TabsContent value="portfolio">Proximamente</TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          <div>
+            <DataTable columns={columns} data={data} />
+          </div>
+        </TabsContent>
+        <TabsContent value="portfolio">Proximamente</TabsContent>
+      </Tabs>
+    </>
   );
 }

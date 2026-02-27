@@ -8,6 +8,7 @@ import {
 } from "@/lib/generated/prisma/enums";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export const getStyleLabel = (style: TattooStyle) => {
   switch (style) {
@@ -55,15 +56,7 @@ export type RequestTattoo = {
   status: RequestStatus | null;
   requestCode: string | null;
   style: TattooStyle;
-  styleOther: string | null;
-  bodyZone: string;
-  size: TattooSize;
-  colorMode: ColorMode;
-  specialInstructions: string | null;
   fullName: string | null;
-  whatsappE164: string | null;
-  priceCents: number | null;
-  depositCents: number | null;
   sentAt: Date | null;
   createdAt: Date;
 };
@@ -72,6 +65,14 @@ export const columns: ColumnDef<RequestTattoo>[] = [
   {
     accessorKey: "requestCode",
     header: "Código",
+    cell: ({ row }) => {
+      const value = row.original;
+      return (
+        <Link href={`/admin/lead/${value.requestCode}`}>
+          {value.requestCode ?? "N/A"}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "fullName",
