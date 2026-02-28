@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/modules/core/components/ui/button";
 import { X, Menu } from "lucide-react";
+import { APP_NAME } from "@/lib/config/brand";
 
 export default function LandingNavbar() {
   const [open, setOpen] = useState(false);
@@ -12,9 +13,9 @@ export default function LandingNavbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-6">
         <Link
           href="/"
-          className="font-bebas text-2xl tracking-wider bg-linear-to-r from-primary to-tertiary bg-clip-text text-transparent"
+          className="font-bebas text-4xl tracking-wider bg-linear-to-r from-primary to-tertiary bg-clip-text text-transparent"
         >
-          ZTATTOOS
+          {APP_NAME}
         </Link>
 
         {/* Desktop */}

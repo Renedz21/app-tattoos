@@ -1,14 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import {
-  getStatusLabel,
-  getSizeLabel,
-  STYLE_LABELS,
-  SIZE_LABELS,
-} from "@/lib/labels";
-import { ArrowLeft, CheckCircle2, Clock, Circle } from "lucide-react";
-import { RequestStatus, TattooStyle } from "@/lib/generated/prisma/enums";
+import { getStatusLabel, STYLE_LABELS, SIZE_LABELS } from "@/lib/labels";
+import { ArrowLeft, Check, Clock, Circle } from "lucide-react";
+import { RequestStatus } from "@/lib/generated/prisma/enums";
+import { cn } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -24,7 +20,6 @@ type TimelineEvent = {
 function buildTimeline(tr: {
   sentAt: Date | null;
   quotedAt: Date | null;
-  depositSubmittedAt: Date | null;
   depositConfirmedAt: Date | null;
   appointmentAt: Date | null;
   finishedAt: Date | null;
@@ -44,16 +39,10 @@ function buildTimeline(tr: {
       doneAt: tr.quotedAt,
     },
     {
-      key: "deposit_submitted",
-      label: "Depósito registrado",
-      description: "Registramos tu comprobante de depósito.",
-      doneAt: tr.depositSubmittedAt,
-    },
-    {
       key: "deposit_confirmed",
-      label: "Depósito confirmado",
+      label: "Pago confirmado / Cita confirmada",
       description: "Tu pago fue confirmado. ¡Ya estás en la agenda!",
-      doneAt: tr.depositConfirmedAt,
+      doneAt: tr.depositConfirmedAt ?? tr.appointmentAt,
     },
     {
       key: "appointment",
@@ -83,7 +72,6 @@ function formatDate(date: Date): string {
 const TRACKING_STATUS_LABELS: Record<RequestStatus, string> = {
   [RequestStatus.SENT]: "Solicitud enviada",
   [RequestStatus.QUOTED]: "Cotización enviada",
-  [RequestStatus.DEPOSIT_PENDING]: "Esperando depósito",
   [RequestStatus.APPOINTMENT_CONFIRMED]: "Cita confirmada",
   [RequestStatus.FINISHED]: "Completado",
   [RequestStatus.EXPIRED]: "Expirado",
@@ -95,7 +83,6 @@ function StatusBadge({ status }: { status: RequestStatus }) {
     [
       RequestStatus.SENT,
       RequestStatus.QUOTED,
-      RequestStatus.DEPOSIT_PENDING,
       RequestStatus.APPOINTMENT_CONFIRMED,
     ] as RequestStatus[]
   ).includes(status);
@@ -104,7 +91,7 @@ function StatusBadge({ status }: { status: RequestStatus }) {
 
   return (
     <span
-      className={[
+      className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium font-grotesk",
         isFinished
           ? "bg-emerald-500/15 text-emerald-500"
@@ -113,10 +100,10 @@ function StatusBadge({ status }: { status: RequestStatus }) {
             : isActive
               ? "bg-primary/15 text-primary"
               : "bg-muted text-muted-foreground",
-      ].join(" ")}
+      )}
     >
       <span
-        className={[
+        className={cn(
           "h-1.5 w-1.5 rounded-full",
           isFinished
             ? "bg-emerald-500"
@@ -125,7 +112,7 @@ function StatusBadge({ status }: { status: RequestStatus }) {
               : isActive
                 ? "bg-primary animate-pulse"
                 : "bg-muted-foreground",
-        ].join(" ")}
+        )}
       />
       {label}
     </span>
@@ -144,26 +131,25 @@ function TimelineStep({ event, isLast }: TimelineStepProps) {
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
         <div
-          className={[
+          className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
             isDone
               ? "border-emerald-500 bg-emerald-500/15 text-emerald-500"
               : "border-border bg-card text-muted-foreground",
-          ].join(" ")}
+          )}
         >
           {isDone ? (
-            <CheckCircle2 className="h-4 w-4" />
+            <Check className="h-4 w-4" />
           ) : (
             <Circle className="h-3.5 w-3.5" />
           )}
         </div>
         {!isLast && (
           <div
-            className={[
-              "mt-1 w-px flex-1",
+            className={cn(
+              "mt-1 w-px flex-1 min-h-8",
               isDone ? "bg-emerald-500/40" : "bg-border",
-            ].join(" ")}
-            style={{ minHeight: "2rem" }}
+            )}
           />
         )}
       </div>
@@ -171,10 +157,10 @@ function TimelineStep({ event, isLast }: TimelineStepProps) {
       {/* Content */}
       <div className="pb-8 min-w-0">
         <p
-          className={[
+          className={cn(
             "font-grotesk text-sm font-semibold leading-tight",
             isDone ? "text-foreground" : "text-muted-foreground",
-          ].join(" ")}
+          )}
         >
           {event.label}
         </p>
@@ -206,13 +192,13 @@ const select = {
   availability: true,
   sentAt: true,
   quotedAt: true,
-  depositSubmittedAt: true,
   depositConfirmedAt: true,
   appointmentAt: true,
   finishedAt: true,
   createdAt: true,
   selectedImagePublicUrl: true,
 } as const;
+
 async function findRequest(slug: string) {
   // 1st attempt: treat slug as trackingToken
   const byToken = await prisma.tattooRequest.findUnique({

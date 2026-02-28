@@ -9,10 +9,6 @@ import { RequestStatus } from "@/lib/generated/prisma/enums";
 const VALID_TRANSITIONS: Record<string, RequestStatus[]> = {
   [RequestStatus.SENT]: [RequestStatus.QUOTED, RequestStatus.EXPIRED],
   [RequestStatus.QUOTED]: [
-    RequestStatus.DEPOSIT_PENDING,
-    RequestStatus.EXPIRED,
-  ],
-  [RequestStatus.DEPOSIT_PENDING]: [
     RequestStatus.APPOINTMENT_CONFIRMED,
     RequestStatus.EXPIRED,
   ],
@@ -63,7 +59,6 @@ export const POST = withAdmin<{ id: string }>(async (req, { params }) => {
   const now = new Date();
   const timestampMap: Record<string, Record<string, Date>> = {
     [RequestStatus.QUOTED]: { quotedAt: now },
-    [RequestStatus.DEPOSIT_PENDING]: { depositSubmittedAt: now },
     [RequestStatus.APPOINTMENT_CONFIRMED]: {
       depositConfirmedAt: now,
       appointmentAt: parsed.data.appointmentAt
@@ -84,7 +79,6 @@ export const POST = withAdmin<{ id: string }>(async (req, { params }) => {
       id: true,
       status: true,
       quotedAt: true,
-      depositSubmittedAt: true,
       depositConfirmedAt: true,
       appointmentAt: true,
       finishedAt: true,

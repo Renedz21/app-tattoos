@@ -21,8 +21,7 @@ export function getStyleLabel(style: TattooStyle): string {
 export const STATUS_LABELS: Record<RequestStatus, string> = {
   [RequestStatus.SENT]: "Enviado",
   [RequestStatus.QUOTED]: "Cotizado",
-  [RequestStatus.DEPOSIT_PENDING]: "Seña pendiente",
-  [RequestStatus.APPOINTMENT_CONFIRMED]: "Reserva confirmada",
+  [RequestStatus.APPOINTMENT_CONFIRMED]: "Cita confirmada",
   [RequestStatus.FINISHED]: "Finalizado",
   [RequestStatus.EXPIRED]: "Expirado",
 };

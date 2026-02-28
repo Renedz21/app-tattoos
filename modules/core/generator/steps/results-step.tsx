@@ -8,14 +8,14 @@ import { useTattooGeneration } from "../hooks/use-tattoo-generation";
 import PreviewGallery from "./preview-gallery";
 import QuoteForm from "./quote-form";
 import ConfirmationScreen from "./confirmation-screen";
-import { Button } from "../../components/ui/button";
-import { Textarea } from "../../components/ui/textarea";
+import { Button } from "@/modules/core/components/ui/button";
+import { Textarea } from "@/modules/core/components/ui/textarea";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "../../components/ui/field";
+} from "@/modules/core/components/ui/field";
 import { AlertCircle, Loader2, RefreshCw, Send } from "lucide-react";
 
 interface ResultsStepProps {

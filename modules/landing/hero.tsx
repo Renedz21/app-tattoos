@@ -10,7 +10,7 @@ export default function Hero() {
       <div className="container relative z-10 flex flex-col items-center gap-8 px-4 pt-20 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-          Estudio en San Juan de Lurigancho, Lima
+          Anímate a hacer tu primer tatuaje
         </div>
 
         <h1 className="max-w-4xl font-bebas text-5xl leading-[0.95] tracking-wide sm:text-7xl md:text-8xl lg:text-9xl">
@@ -46,12 +46,6 @@ export default function Hero() {
           </a>
         </div>
 
-        <a
-          href="#portafolio"
-          className="mt-16 animate-bounce text-muted-foreground/50 transition-colors hover:text-primary"
-        >
-          <ArrowDown size={24} />
-        </a>
       </div>
     </section>
   );

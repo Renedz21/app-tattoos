@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@/lib/generated/prisma/client";
 import prisma from "@/lib/prisma";
 
-const PREFIX = "ZT";
+const PREFIX = "INK";
 export const SUFFIX_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 export const SUFFIX_LENGTH = 4;
 const MAX_RETRIES = 10;

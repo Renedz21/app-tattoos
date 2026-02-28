@@ -5,22 +5,28 @@ import {
   ColorMode,
 } from "@/lib/generated/prisma/enums";
 
-export const TattooStyleSchema = z.enum(TattooStyle);
-export const TattooSizeSchema = z.enum(TattooSize);
+export const TattooStyleSchema = z.enum(TattooStyle, {
+  error: "El estilo del tatuaje es requerido",
+});
+export const TattooSizeSchema = z.enum(TattooSize, {
+  error: "El tamaño del tatuaje es requerido",
+});
 export const ColorModeSchema = z.enum(ColorMode);
 
 export const Step1Schema = z.object({
-  title: z.string().trim().min(1).max(80).optional(),
   style: TattooStyleSchema,
-  bodyZone: z.string().trim().min(2).max(50),
+  bodyZone: z.string().trim().min(2, {
+    message: "El área del cuerpo es requerida",
+  }).max(50),
   size: TattooSizeSchema,
-  sizeNotes: z.string().trim().min(2).max(50).optional(),
   colorMode: ColorModeSchema,
   detailLevel: z.number().int().min(1).max(5),
 });
 
 export const Step2Schema = z.object({
-  specialInstructions: z.string().trim().max(600).optional(),
+  specialInstructions: z.string().trim().min(1, {
+    message: "Las instrucciones para el diseño son requeridas",
+  }).max(600),
 });
 
 export const masterSchema = z.object({
@@ -28,7 +34,8 @@ export const masterSchema = z.object({
   ...Step2Schema.shape,
 });
 
-export const stepSchemas = [Step1Schema, Step2Schema] as const;
+export const stepSchemas = [Step1Schema, Step2Schema, null] as const;
+export const TOTAL_STEPS = stepSchemas.length;
 
 export type Step1Input = z.infer<typeof Step1Schema>;
 export type Step2Input = z.infer<typeof Step2Schema>;

@@ -1,5 +1,4 @@
-import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { Input } from "@/modules/core/components/ui/input";
+import { Controller, useFormContext } from "react-hook-form";
 import {
   Field,
   FieldContent,
@@ -23,13 +22,12 @@ import {
   STYLE_OPTIONS,
 } from "@/constants/generator";
 import { cn } from "@/lib/utils";
-import { Slider } from "../../components/ui/slider";
+import { Slider } from "@/modules/core/components/ui/slider";
 
 export default function BasicStep() {
   const {
     control,
     setValue,
-    formState: { errors },
   } = useFormContext<MasterSchemaType>();
   return (
     <FieldGroup>
@@ -41,6 +39,7 @@ export default function BasicStep() {
             <FieldLabel htmlFor="form-rhf-product-name">
               Estilo de Tatuaje
             </FieldLabel>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {STYLE_OPTIONS.map((option) => (
                 <button
@@ -107,6 +106,7 @@ export default function BasicStep() {
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor="form-rhf-product-name">Tamaño</FieldLabel>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {SIZE_OPTIONS.map((option) => (
                 <button

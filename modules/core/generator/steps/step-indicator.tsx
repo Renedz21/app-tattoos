@@ -26,11 +26,11 @@ const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300",
                   isCompleted &&
-                    "border-primary bg-primary text-primary-foreground",
+                  "border-primary bg-primary text-primary-foreground",
                   isActive && "border-primary bg-primary/20 text-primary",
                   !isActive &&
-                    !isCompleted &&
-                    "border-border bg-card text-muted-foreground",
+                  !isCompleted &&
+                  "border-border bg-card text-muted-foreground",
                 )}
               >
                 <Icon size={18} />

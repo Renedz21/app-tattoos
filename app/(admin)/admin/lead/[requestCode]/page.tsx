@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ArrowLeft, MessageCircle, Phone } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { WHATSAPP_TEMPLATES } from "@/lib/config/brand";
 
 type Props = {
   params: Promise<{
@@ -14,11 +15,60 @@ type Props = {
   }>;
 };
 
+function formatCents(cents: number | null | undefined): string {
+  if (!cents) return "—";
+  return `S/ ${(cents / 100).toFixed(0)}`;
+}
+
+function buildWhatsAppQuoteUrl(lead: {
+  whatsappE164: string | null;
+  fullName: string | null;
+  requestCode: string | null;
+  trackingToken: string;
+  priceCents: number | null;
+  depositCents: number | null;
+}): string {
+  const name = lead.fullName ?? "cliente";
+  const code = lead.requestCode ?? lead.trackingToken;
+  const total = formatCents(lead.priceCents);
+  const adelanto = formatCents(lead.depositCents);
+  const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/seguimiento/${code}`;
+
+  const msg = WHATSAPP_TEMPLATES.adminQuote(name, code, total, adelanto, trackingUrl);
+
+  return `https://wa.me/${lead.whatsappE164 ?? ""}?text=${encodeURIComponent(msg)}`;
+}
+
 export default async function Page({ params }: Props) {
   const { requestCode } = await params;
 
   const lead = await prisma.tattooRequest.findFirst({
     where: { requestCode },
+    select: {
+      id: true,
+      requestCode: true,
+      trackingToken: true,
+      status: true,
+      fullName: true,
+      whatsappE164: true,
+      district: true,
+      createdAt: true,
+      style: true,
+      bodyZone: true,
+      size: true,
+      colorMode: true,
+      detailLevel: true,
+      availability: true,
+      extraComments: true,
+      selectedImagePublicUrl: true,
+      priceCents: true,
+      depositCents: true,
+      quotedAt: true,
+      depositConfirmedAt: true,
+      appointmentAt: true,
+      finishedAt: true,
+      expiredAt: true,
+    },
   });
 
   if (!lead) notFound();
@@ -176,7 +226,7 @@ export default async function Page({ params }: Props) {
               )}
               {lead.depositConfirmedAt && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Seña pagada</span>
+                  <span className="text-muted-foreground">Pago confirmado</span>
                   <span className="text-foreground text-xs">
                     {format(
                       new Date(lead.depositConfirmedAt),
@@ -218,7 +268,7 @@ export default async function Page({ params }: Props) {
                 className="justify-start rounded-sm border-border/50 text-foreground"
               >
                 <a
-                  href={`https://wa.me/${lead.whatsappE164}?text=Hola ${lead.fullName}, te escribimos de ZTattoos respecto a tu solicitud ${lead.requestCode}.`}
+                  href={buildWhatsAppQuoteUrl(lead)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

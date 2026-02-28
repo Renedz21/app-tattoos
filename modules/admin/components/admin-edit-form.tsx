@@ -145,7 +145,7 @@ export default function AdminEditForm({ defaults }: Props) {
                 >
                   <SelectValue placeholder="Selecciona un estado" />
                 </SelectTrigger>
-                <SelectContent position="item-aligned">
+                <SelectContent position="popper">
                   {selectableStatuses.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
                       {s.label}

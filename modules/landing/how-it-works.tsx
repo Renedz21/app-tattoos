@@ -31,7 +31,7 @@ export default function HowItWorks() {
       id="como-funciona"
       className="py-24 md:py-32 border-t border-border/30"
     >
-      <div className="container">
+      <div className="container mx-auto px-4 lg:px-6">
         <div className="mb-16 text-center">
           <h2 className="font-bebas  text-4xl tracking-wide sm:text-5xl md:text-6xl">
             Cómo{" "}

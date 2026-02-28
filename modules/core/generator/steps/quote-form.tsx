@@ -5,15 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { QuoteFormSchema, type QuoteFormInput } from "@/modules/schemas/tattoo";
 import { useR2PresignedUpload } from "../hooks/use-r2-presigned-upload";
 import { api, ApiError } from "@/lib/api";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/modules/core/components/ui/button";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "../../components/ui/field";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
+} from "@/modules/core/components/ui/field";
+import { Input } from "@/modules/core/components/ui/input";
+import { Textarea } from "@/modules/core/components/ui/textarea";
 import { AlertCircle, ArrowLeft, Loader2, Send } from "lucide-react";
 import { useState } from "react";
 import type { PreviewItem } from "../hooks/use-tattoo-generation";

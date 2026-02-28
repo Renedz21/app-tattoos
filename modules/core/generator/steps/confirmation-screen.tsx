@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/modules/core/components/ui/button";
 import { CheckCircle2, Copy, Check, MessageCircle, Eye } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { WHATSAPP_TEMPLATES } from "@/lib/config/brand";
 
 interface ConfirmationScreenProps {
   requestCode: string;
@@ -14,7 +15,7 @@ interface ConfirmationScreenProps {
 function buildWhatsAppUrl(requestCode: string): string {
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
   const msg = encodeURIComponent(
-    `Hola! Acabo de enviar mi solicitud de diseño de tatuaje. Mi código es ${requestCode}. ¿Podrían darme más información?`,
+    WHATSAPP_TEMPLATES.clientConfirmation(requestCode),
   );
   const base = phone
     ? `https://wa.me/${phone.replace(/\D/g, "")}`

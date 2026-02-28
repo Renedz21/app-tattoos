@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inkyra
 
-## Getting Started
+**Tattoo Design & Booking, Powered by AI**
 
-First, run the development server:
+Inkyra es una plataforma de diseño y reserva de tatuajes potenciada por inteligencia artificial. Los clientes generan diseños únicos con IA, solicitan cotización y agendan su cita — todo en un solo lugar.
+
+## Stack
+
+- **Framework**: Next.js 16 (App Router) + TypeScript
+- **Estilos**: Tailwind CSS v4
+- **Base de datos**: PostgreSQL (Neon) via Prisma ORM
+- **Auth**: Better Auth (Magic Link)
+- **IA**: Google Gemini (AI SDK)
+- **Storage**: Cloudflare R2
+- **Testing**: Vitest + Playwright
+
+## Desarrollo local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env   # completar variables
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) para ver la app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comando | Descripción |
+|---|---|
+| `pnpm dev` | Servidor de desarrollo |
+| `pnpm build` | Build de producción |
+| `pnpm test` | Tests unitarios (Vitest) |
+| `pnpm lint` | Linter (Biome) |
+| `pnpm format` | Formatear código (Biome) |
 
-## Learn More
+## Estructura
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+├── (admin)/        # Dashboard admin (protegido por Magic Link)
+├── (marketing)/    # Landing, generador IA, seguimiento
+└── api/            # API routes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+lib/
+├── config/
+│   └── brand.ts    # Constantes de marca centralizadas
+├── ai/             # Generación de imágenes con IA
+└── r2/             # Cloudflare R2 storage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+modules/
+├── admin/          # Componentes y lógica del panel admin
+├── core/           # Generador IA, componentes UI compartidos
+├── landing/        # Hero, Footer, HowItWorks
+└── schemas/        # Validación Zod
+```
 
-## Deploy on Vercel
+## Variables de entorno
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ver `.env.example` para la lista completa de variables requeridas.

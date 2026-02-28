@@ -95,18 +95,9 @@ enum ColorMode {
 enum RequestStatus {
   SENT
   QUOTED
-  DEPOSIT_PENDING
   APPOINTMENT_CONFIRMED
   FINISHED
   EXPIRED
-}
-
-enum PaymentMethod {
-  YAPE
-  PLIN
-  TRANSFER
-  CASH
-  OTHER
 }
 
 model TattooRequest {
@@ -145,17 +136,8 @@ model TattooRequest {
   depositCents Int?
   depositDueAt DateTime?
 
-  depositMethod           PaymentMethod?
-  depositVerificationCode String?        @db.VarChar(3)
-  depositProofR2Key       String?
-  depositProofPublicUrl   String?
-  depositProofMimeType    String?
-  depositProofSizeBytes   Int?
-  depositAdminNote        String?
-
   sentAt             DateTime?
   quotedAt           DateTime?
-  depositSubmittedAt DateTime?
   depositConfirmedAt DateTime?
   appointmentAt      DateTime?
   finishedAt         DateTime?

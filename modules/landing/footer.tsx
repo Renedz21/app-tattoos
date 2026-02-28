@@ -1,15 +1,16 @@
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
+import { APP_NAME, getAppCopyright } from "@/lib/config/brand";
 
 export default function Footer() {
   return (
     <footer className="border-t border-border/30 bg-ink-light">
-      <div className="container mx-auto px-4 py-12 md:py-16 md:px-6">
-        <div className="grid gap-10 md:grid-cols-3">
+      <div className="container mx-auto px-4 py-12 md:py-16 lg:px-6">
+        <div className="grid justify-items-center gap-10 md:grid-cols-3">
           {/* Brand */}
           <div>
             <span className="font-bebas text-3xl tracking-wider bg-linear-to-r from-primary to-tertiary text-transparent bg-clip-text">
-              ZTATOOS
+              {APP_NAME}
             </span>
             <p className="mt-3 text-sm text-muted-foreground font-grotesk max-w-xs leading-relaxed">
               Estudio de tatuajes premium en San Juan de Lurigancho. Tu idea,
@@ -79,8 +80,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-border/30  text-center text-xs text-muted-foreground/60 font-grotesk">
-          © {new Date().getFullYear()} ZTatoos. Todos los derechos reservados.
-          Lima, Perú.
+          {getAppCopyright()} Lima, Perú.
         </div>
       </div>
     </footer>

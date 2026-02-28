@@ -28,8 +28,8 @@ describe("randomSuffix", () => {
 });
 
 describe("buildCode", () => {
-  it("prefixes the suffix with 'ZT-'", () => {
-    expect(buildCode("AB12")).toBe("ZT-AB12");
+  it("prefixes the suffix with 'INK-'", () => {
+    expect(buildCode("AB12")).toBe("INK-AB12");
   });
 
   it("preserves the exact suffix passed", () => {
@@ -39,17 +39,17 @@ describe("buildCode", () => {
 
   it("returns a string matching the expected pattern", () => {
     const code = buildCode("A2B3");
-    expect(code).toMatch(/^ZT-[A-Z0-9]{4}$/);
+    expect(code).toMatch(/^INK-[A-Z0-9]{4}$/);
   });
 
   it("handles arbitrary suffix values", () => {
-    expect(buildCode("")).toBe("ZT-");
-    expect(buildCode("LONGERSUFFIX")).toBe("ZT-LONGERSUFFIX");
+    expect(buildCode("")).toBe("INK-");
+    expect(buildCode("LONGERSUFFIX")).toBe("INK-LONGERSUFFIX");
   });
 });
 
 describe("generateRequestCode", () => {
-  it("returns a code in ZT-XXXX format", async () => {
+  it("returns a code in INK-XXXX format", async () => {
     const mockDb = {
       tattooRequest: {
         findUnique: vi.fn().mockResolvedValue(null),
@@ -57,7 +57,7 @@ describe("generateRequestCode", () => {
     };
 
     const code = await generateRequestCode(mockDb as never);
-    expect(code).toMatch(/^ZT-[A-Z0-9]{4}$/);
+    expect(code).toMatch(/^INK-[A-Z0-9]{4}$/);
   });
 
   it("calls findUnique with requestCode to check uniqueness", async () => {
@@ -68,7 +68,7 @@ describe("generateRequestCode", () => {
 
     expect(findUnique).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ requestCode: expect.stringMatching(/^ZT-/) }),
+        where: expect.objectContaining({ requestCode: expect.stringMatching(/^INK-/) }),
         select: { id: true },
       }),
     );
@@ -86,7 +86,7 @@ describe("generateRequestCode", () => {
     const code = await generateRequestCode(mockDb as never);
 
     expect(findUnique).toHaveBeenCalledTimes(3);
-    expect(code).toMatch(/^ZT-[A-Z0-9]{4}$/);
+    expect(code).toMatch(/^INK-[A-Z0-9]{4}$/);
   });
 
   it("throws after MAX_RETRIES consecutive collisions", async () => {

@@ -19,7 +19,14 @@ export default function GeneratorClient() {
     isFirst,
     isLast,
     isTransitioning,
+    apiError,
   } = useGeneratorForm();
+
+  {
+    apiError && (
+      <p className="text-sm text-destructive mb-2">{apiError}</p>
+    )
+  }
 
   return (
     <FormProvider {...form}>
@@ -35,7 +42,7 @@ export default function GeneratorClient() {
             type="button"
             onClick={goNext}
             disabled={isTransitioning}
-            className="w-full font-grotesk font-semibold"
+            className="w-full font-grotesk font-semibold "
             size="lg"
           >
             {isTransitioning ? (

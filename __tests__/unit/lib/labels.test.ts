@@ -83,13 +83,9 @@ describe("getStatusLabel", () => {
     expect(getStatusLabel(RequestStatus.QUOTED)).toBe("Cotizado");
   });
 
-  it("returns 'Seña pendiente' for DEPOSIT_PENDING", () => {
-    expect(getStatusLabel(RequestStatus.DEPOSIT_PENDING)).toBe("Seña pendiente");
-  });
-
-  it("returns 'Reserva confirmada' for APPOINTMENT_CONFIRMED", () => {
+  it("returns 'Cita confirmada' for APPOINTMENT_CONFIRMED", () => {
     expect(getStatusLabel(RequestStatus.APPOINTMENT_CONFIRMED)).toBe(
-      "Reserva confirmada",
+      "Cita confirmada",
     );
   });
 
