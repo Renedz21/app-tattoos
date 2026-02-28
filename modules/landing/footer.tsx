@@ -30,7 +30,7 @@ export default function Footer() {
                 Portafolio
               </a>
               <Link
-                href="/generar"
+                href="/generator"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors font-grotesk"
               >
                 Generar idea con IA

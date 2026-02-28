@@ -1,8 +1,7 @@
-export const runtime = "nodejs";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { generateRequestCode } from "@/lib/request-code";
+import { buildR2PublicUrl } from "@/lib/r2/public-url";
 import { SubmitQuoteSchema } from "@/modules/schemas/tattoo";
 import { RequestStatus } from "@/lib/generated/prisma/enums";
 
@@ -43,14 +42,10 @@ export async function POST(
   }
 
   if (tr.status === RequestStatus.SENT || tr.status === RequestStatus.QUOTED) {
-    return NextResponse.json(
-      { error: "already_submitted" },
-      { status: 409 },
-    );
+    return NextResponse.json({ error: "already_submitted" }, { status: 409 });
   }
 
-  const publicBase = process.env.R2_PUBLIC_URL?.replace(/\/$/, "");
-  const publicUrl = publicBase ? `${publicBase}/${r2Key}` : null;
+  const publicUrl = buildR2PublicUrl(r2Key);
 
   let requestCode: string;
   try {

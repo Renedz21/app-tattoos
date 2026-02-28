@@ -14,7 +14,7 @@ type PresignResponse = {
 
 export function dataUrlToBlob(dataUrl: string): Blob {
   const [meta, base64] = dataUrl.split(",");
-  const mime = meta.match(/:(.*?);/)?.[1] ?? "image/png";
+  const mime = meta.match(/:(.*?);/)?.[1] || "image/png";
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {

@@ -18,8 +18,6 @@ import { AlertCircle, ArrowLeft, Loader2, Send } from "lucide-react";
 import { useState } from "react";
 import type { PreviewItem } from "../hooks/use-tattoo-generation";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface QuoteFormProps {
   requestId: string;
   selectedPreview: PreviewItem;
@@ -31,8 +29,6 @@ type SubmitQuoteResponse = {
   requestCode: string;
   trackingToken: string;
 };
-
-// ─── Subcomponents ────────────────────────────────────────────────────────────
 
 function ErrorBanner({ message }: { message: string }) {
   return (
@@ -46,24 +42,6 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-/**
- * QuoteForm
- *
- * Second sub-step of Step 3. Shown after the user clicks "Enviar a cotización"
- * on the ResultsStep. It:
- *
- *  1. Displays the selected preview as a reference thumbnail.
- *  2. Collects contact + availability data via RHF + zod.
- *  3. On submit:
- *       a. Uploads the selected preview blob directly to R2 (presign + PUT).
- *       b. Calls POST /api/request/:id/submit-quote with contact data + R2 metadata.
- *       c. On success, calls onSuccess(requestCode, trackingToken).
- *
- * The binary NEVER passes through Vercel — only the R2 key and metadata
- * are sent to the API route.
- */
 export default function QuoteForm({
   requestId,
   selectedPreview,
@@ -89,7 +67,6 @@ export default function QuoteForm({
     setSubmitError(null);
 
     try {
-      // Step 1 + 2: upload selected preview blob directly to R2
       const { r2Key, mimeType, sizeBytes } = await presignAndUpload(
         requestId,
         selectedPreview.dataUrl,
@@ -131,7 +108,6 @@ export default function QuoteForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <FieldGroup>
-        {/* ── Preview thumbnail ──────────────────────────────────────────── */}
         <div className="flex items-center gap-4 rounded-xl border border-border bg-card/50 p-3">
           <img
             src={selectedPreview.dataUrl}
@@ -147,8 +123,6 @@ export default function QuoteForm({
             </p>
           </div>
         </div>
-
-        {/* ── Nombre completo ────────────────────────────────────────────── */}
         <Field>
           <FieldLabel>
             Nombre completo <span className="text-destructive">*</span>
@@ -161,8 +135,6 @@ export default function QuoteForm({
           />
           {errors.fullName && <FieldError errors={[errors.fullName]} />}
         </Field>
-
-        {/* ── WhatsApp ───────────────────────────────────────────────────── */}
         <Field>
           <FieldLabel>
             WhatsApp <span className="text-destructive">*</span>
@@ -176,8 +148,6 @@ export default function QuoteForm({
           />
           {errors.whatsapp && <FieldError errors={[errors.whatsapp]} />}
         </Field>
-
-        {/* ── Distrito ──────────────────────────────────────────────────── */}
         <Field>
           <FieldLabel>
             Distrito <span className="text-destructive">*</span>
@@ -190,8 +160,6 @@ export default function QuoteForm({
           />
           {errors.district && <FieldError errors={[errors.district]} />}
         </Field>
-
-        {/* ── Disponibilidad ────────────────────────────────────────────── */}
         <Field>
           <FieldLabel>
             Disponibilidad <span className="text-destructive">*</span>
@@ -203,8 +171,6 @@ export default function QuoteForm({
           />
           {errors.availability && <FieldError errors={[errors.availability]} />}
         </Field>
-
-        {/* ── Comentarios extra ─────────────────────────────────────────── */}
         <Field>
           <FieldLabel>Comentarios adicionales (opcional)</FieldLabel>
           <Textarea
@@ -217,11 +183,7 @@ export default function QuoteForm({
             <FieldError errors={[errors.extraComments]} />
           )}
         </Field>
-
-        {/* ── Error global ──────────────────────────────────────────────── */}
         {submitError && <ErrorBanner message={submitError} />}
-
-        {/* ── Actions ───────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button
             type="button"

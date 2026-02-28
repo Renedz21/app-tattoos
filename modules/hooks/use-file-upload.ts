@@ -8,8 +8,6 @@ import {
   useState,
 } from "react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export type FileMetadata = {
   id: string;
   name: string;
@@ -56,8 +54,6 @@ export type FileUploadActions = {
   ) => InputHTMLAttributes<HTMLInputElement> & { ref: any }; // biome-ignore lint/suspicious/noExplicitAny: ref compat
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 export const formatBytes = (bytes: number, decimals = 2): string => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
@@ -83,8 +79,6 @@ const revokeEntry = ({ file, preview }: FileWithPreview) => {
   }
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 export const useFileUpload = (
   options: FileUploadOptions = {},
 ): [FileUploadState, FileUploadActions] => {
@@ -96,18 +90,12 @@ export const useFileUpload = (
     initialFiles = [],
   } = options;
 
-  // Stable callback refs — always current, never stale, zero re-renders
   const onFilesChangeRef = useRef(options.onFilesChange);
   onFilesChangeRef.current = options.onFilesChange;
   const onFilesAddedRef = useRef(options.onFilesAdded);
   onFilesAddedRef.current = options.onFilesAdded;
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Source of truth for duplicate detection.
-  // ⚠️ Only mutate OUTSIDE setState — Strict Mode runs updaters twice,
-  //    mutating inside would register keys on the discarded first run,
-  //    making real files appear as duplicates on the kept second run.
   const keySet = useRef<Set<string>>(new Set(initialFiles.map(fileKey)));
 
   const [state, setState] = useState<FileUploadState>({
@@ -120,8 +108,6 @@ export const useFileUpload = (
     () => (accept === "*" ? null : accept.split(",").map((t) => t.trim())),
     [accept],
   );
-
-  // ── Validation ─────────────────────────────────────────────────────────────
 
   const validate = useCallback(
     (file: File | FileMetadata): string | null => {
@@ -144,14 +130,10 @@ export const useFileUpload = (
     [acceptedTypes, maxSize],
   );
 
-  // ── Actions ────────────────────────────────────────────────────────────────
-
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
       const incoming = Array.from(newFiles ?? []);
       if (!incoming.length) return;
-
-      // Single mode: clean up current files before processing
       if (!multiple) {
         state.files.forEach(revokeEntry);
         keySet.current.clear();
@@ -168,12 +150,8 @@ export const useFileUpload = (
           errors.push(error);
           continue;
         }
-
-        // ✅ createObjectURL outside setState — prevents blob URL leaks
         valid.push(toEntry(file));
       }
-
-      // Max files guard — checked after dedup/validation for accuracy
       if (
         multiple &&
         maxFiles !== Infinity &&
@@ -187,7 +165,6 @@ export const useFileUpload = (
         return;
       }
 
-      // ✅ keySet mutated outside setState — safe from double-execution
       for (const { file } of valid) keySet.current.add(fileKey(file));
       if (inputRef.current) inputRef.current.value = "";
 
@@ -197,8 +174,6 @@ export const useFileUpload = (
       }
 
       const nextFiles = multiple ? [...state.files, ...valid] : valid;
-
-      // ✅ Pure state update — zero side effects inside
       setState((prev) => ({ ...prev, errors, files: nextFiles }));
       onFilesAddedRef.current?.(valid);
       onFilesChangeRef.current?.(nextFiles);
@@ -234,8 +209,6 @@ export const useFileUpload = (
   );
 
   const openFileDialog = useCallback(() => inputRef.current?.click(), []);
-
-  // ── Drag & Drop ────────────────────────────────────────────────────────────
 
   const handleDragEnter = useCallback((e: DragEvent<HTMLElement>) => {
     e.preventDefault();
@@ -284,8 +257,6 @@ export const useFileUpload = (
     }),
     [accept, multiple, handleFileChange],
   );
-
-  // ── Return ─────────────────────────────────────────────────────────────────
 
   return [
     state,

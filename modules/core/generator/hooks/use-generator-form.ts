@@ -8,8 +8,6 @@ import {
 } from "@/modules/schemas/tattoo";
 import { api } from "@/lib/api";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type CreateRequestResponse = {
   id: string;
   trackingToken: string;
@@ -21,31 +19,8 @@ type UpdateStep2Response = {
   status: string;
 };
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+const TOTAL_STEPS = stepSchemas.length + 1;
 
-// stepSchemas has [Step1Schema, Step2Schema] — Step 3 has no master-form fields
-const TOTAL_STEPS = stepSchemas.length + 1; // 3
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
-/**
- * useGeneratorForm
- *
- * Drives the 3-step wizard:
- *  - Holds the single RHF form instance shared across Step 1 and Step 2
- *    via <FormProvider>.
- *  - Step 3 (ResultsStep) manages its own isolated refine form internally.
- *  - On Step 1 → 2: validates Step1 fields, then POST /api/request to
- *    create the TattooRequest and store the returned id as requestId.
- *  - On Step 2 → 3: validates Step2 fields, then PUT /api/request/:id/step-2
- *    to persist specialInstructions.
- *  - isTransitioning gates the navigation buttons while the API call is in
- *    flight so the user cannot double-submit.
- *
- * Assumption: errors during API calls are logged to the console but do NOT
- * block navigation — the wizard advances optimistically so a temporary
- * network hiccup doesn't trap the user. This can be tightened later.
- */
 export function useGeneratorForm() {
   const [step, setStep] = useState(1);
   const [requestId, setRequestId] = useState<string | null>(null);
@@ -66,12 +41,7 @@ export function useGeneratorForm() {
     },
   });
 
-  // ── Navigation ──────────────────────────────────────────────────────────
-
   const goNext = async () => {
-    // stepSchemas is 0-indexed; step is 1-indexed
-    // stepSchemas[0] = Step1Schema, stepSchemas[1] = Step2Schema
-    // Step 3 has no schema entry — skip validation
     const schema = stepSchemas[step];
 
     if (schema) {
@@ -86,7 +56,6 @@ export function useGeneratorForm() {
     setIsTransitioning(true);
 
     try {
-      // ── Step 1 → 2: create TattooRequest ────────────────────────────
       if (step === 1) {
         const v = form.getValues();
         const res = await api<CreateRequestResponse>("/api/request", {
@@ -103,8 +72,6 @@ export function useGeneratorForm() {
         });
         setRequestId(res.id);
       }
-
-      // ── Step 2 → 3: persist specialInstructions ──────────────────────
       if (step === 2 && requestId) {
         const v = form.getValues();
         await api<UpdateStep2Response>(`/api/request/${requestId}/step-2`, {
@@ -115,7 +82,6 @@ export function useGeneratorForm() {
         });
       }
     } catch (err) {
-      // Log but don't block — see assumption note in JSDoc above
       console.error(`[useGeneratorForm] step ${step} API error:`, err);
     } finally {
       setIsTransitioning(false);
@@ -125,8 +91,6 @@ export function useGeneratorForm() {
   };
 
   const goPrev = () => setStep((s) => Math.max(s - 1, 1));
-
-  // ── Return ──────────────────────────────────────────────────────────────
 
   return {
     form,

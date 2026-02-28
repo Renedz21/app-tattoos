@@ -19,24 +19,17 @@ import {
 import { Input } from "@/modules/core/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type FormState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "sent"; email: string }
   | { status: "error"; message: string };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 interface MagicLinkFormProps {
-  /** URL to redirect after successful magic-link verification. Defaults to /admin */
   callbackUrl?: string;
 }
 
@@ -64,8 +57,6 @@ export default function MagicLinkForm({
     });
 
     if (error) {
-      // Do NOT reveal whether the email is in the allowlist.
-      // A generic message covers both "email not found" and actual errors.
       setState({
         status: "error",
         message:
@@ -79,7 +70,6 @@ export default function MagicLinkForm({
     setState({ status: "sent", email: trimmed });
   }
 
-  // ── Sent state ─────────────────────────────────────────────────────────────
   if (state.status === "sent") {
     return (
       <section className="w-full max-w-md">
@@ -115,8 +105,6 @@ export default function MagicLinkForm({
       </section>
     );
   }
-
-  // ── Default form ───────────────────────────────────────────────────────────
   const isLoading = state.status === "loading";
 
   return (

@@ -3,9 +3,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import prisma from "./prisma";
-
-// ─── Email sender ─────────────────────────────────────────────────────────────
-
 /**
  * Sends the magic link to the user's email.
  *
@@ -57,8 +54,6 @@ async function sendMagicLinkEmail({
   );
 }
 
-// ─── Auth instance ────────────────────────────────────────────────────────────
-
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -66,27 +61,12 @@ export const auth = betterAuth({
 
   plugins: [
     magicLink({
-      /**
-       * Magic links expire after 10 minutes.
-       * Increase if users complain about expired links.
-       */
       expiresIn: 600,
-
-      /**
-       * Prevent anyone from self-registering via magic link.
-       * Only pre-existing users (created by an admin) can log in.
-       * Combined with the email allowlist this gives us full control.
-       */
       disableSignUp: false,
-
       sendMagicLink: sendMagicLinkEmail,
     }),
-
-    // Must be last — patches Set-Cookie so it works in Server Actions / RSC.
     nextCookies(),
   ],
 });
-
-// ─── Inferred types (handy for consumers) ────────────────────────────────────
 
 export type Session = typeof auth.$Infer.Session;

@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { ArrowLeft, CheckCircle2, Clock, Circle } from "lucide-react";
 import {
-  RequestStatus,
-  TattooStyle,
-  TattooSize,
-} from "@/lib/generated/prisma/enums";
+  getStatusLabel,
+  getSizeLabel,
+  STYLE_LABELS,
+  SIZE_LABELS,
+} from "@/lib/labels";
+import { ArrowLeft, CheckCircle2, Clock, Circle } from "lucide-react";
+import { RequestStatus, TattooStyle } from "@/lib/generated/prisma/enums";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -78,7 +80,7 @@ function formatDate(date: Date): string {
   }).format(date);
 }
 
-const STATUS_LABELS: Record<RequestStatus, string> = {
+const TRACKING_STATUS_LABELS: Record<RequestStatus, string> = {
   [RequestStatus.SENT]: "Solicitud enviada",
   [RequestStatus.QUOTED]: "Cotización enviada",
   [RequestStatus.DEPOSIT_PENDING]: "Esperando depósito",
@@ -87,24 +89,8 @@ const STATUS_LABELS: Record<RequestStatus, string> = {
   [RequestStatus.EXPIRED]: "Expirado",
 };
 
-const STYLE_LABELS: Record<TattooStyle, string> = {
-  [TattooStyle.FINE_LINE]: "Fine Line",
-  [TattooStyle.BLACKWORK]: "Blackwork",
-  [TattooStyle.REALISM]: "Realismo",
-  [TattooStyle.TRADITIONAL]: "Tradicional",
-  [TattooStyle.LETTERING]: "Lettering",
-  [TattooStyle.MINIMAL]: "Minimalista",
-  [TattooStyle.OTHER]: "Otro",
-};
-
-const SIZE_LABELS: Record<TattooSize, string> = {
-  [TattooSize.SMALL]: "Pequeño",
-  [TattooSize.MEDIUM]: "Mediano",
-  [TattooSize.LARGE]: "Grande",
-  [TattooSize.OTHER]: "Otro",
-};
-
 function StatusBadge({ status }: { status: RequestStatus }) {
+  const label = TRACKING_STATUS_LABELS[status] ?? getStatusLabel(status);
   const isActive = (
     [
       RequestStatus.SENT,
@@ -141,7 +127,7 @@ function StatusBadge({ status }: { status: RequestStatus }) {
                 : "bg-muted-foreground",
         ].join(" ")}
       />
-      {STATUS_LABELS[status]}
+      {label}
     </span>
   );
 }
@@ -257,7 +243,6 @@ export default async function SeguimientoPage({ params }: PageProps) {
   return (
     <div className="min-h-dvh py-8">
       <div className="container mx-auto max-w-2xl space-y-8">
-        {/* ── Back link ───────────────────────────────────────────────── */}
         <Link
           href="/generator"
           className="inline-flex items-center gap-1.5 font-grotesk text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -266,7 +251,6 @@ export default async function SeguimientoPage({ params }: PageProps) {
           Nuevo diseño
         </Link>
 
-        {/* ── Header ──────────────────────────────────────────────────── */}
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-bebas text-4xl tracking-wide">
@@ -286,7 +270,6 @@ export default async function SeguimientoPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* ── Design image ────────────────────────────────────────────── */}
         {tr.selectedImagePublicUrl ? (
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             <img
@@ -303,14 +286,13 @@ export default async function SeguimientoPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* ── Request details ─────────────────────────────────────────── */}
         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
           <h2 className="font-bebas text-xl tracking-wide">
             Detalles del diseño
           </h2>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
             {[
-              { label: "Estilo", value: STYLE_LABELS[tr.style] },
+              { label: "Estilo", value: STYLE_LABELS[tr.style] ?? tr.style },
               { label: "Zona", value: tr.bodyZone },
               { label: "Tamaño", value: SIZE_LABELS[tr.size] },
               {
@@ -341,7 +323,6 @@ export default async function SeguimientoPage({ params }: PageProps) {
           </dl>
         </div>
 
-        {/* ── Timeline ────────────────────────────────────────────────── */}
         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
           <h2 className="font-bebas text-xl tracking-wide">
             Estado del proceso
@@ -357,7 +338,6 @@ export default async function SeguimientoPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* ── Footer note ─────────────────────────────────────────────── */}
         <p className="font-grotesk text-xs text-center text-muted-foreground pb-8">
           Guarda esta URL para consultar el estado de tu solicitud en cualquier
           momento.

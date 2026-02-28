@@ -9,17 +9,6 @@ import StepIndicator from "./steps/step-indicator";
 import { Button } from "../components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-/**
- * GeneratorClient
- *
- * RSC-compatible client shell for the 3-step tattoo wizard.
- * Owns the shared RHF <FormProvider> (Step 1 + 2 fields).
- * Step 3 (ResultsStep) manages its own isolated refine form internally.
- *
- * Navigation buttons live here so they stay consistent across steps.
- * ResultsStep owns its own "Enviar a cotización" button because that
- * action belongs to Step 3's domain (presign → upload → complete).
- */
 export default function GeneratorClient() {
   const {
     form,
@@ -35,15 +24,11 @@ export default function GeneratorClient() {
   return (
     <FormProvider {...form}>
       <StepIndicator currentStep={step} />
-
-      {/* Step content — min-height keeps the layout stable during transitions */}
       <div className="min-h-70">
         {step === 1 && <BasicStep />}
         {step === 2 && <ReferencesStep />}
         {step === 3 && <ResultsStep requestId={requestId} />}
       </div>
-
-      {/* Navigation — hidden on Step 3 (ResultsStep owns its own actions) */}
       <div className="mt-10">
         {isFirst && (
           <Button
@@ -88,7 +73,6 @@ export default function GeneratorClient() {
           </div>
         )}
 
-        {/* Step 3: only a "back" escape hatch — primary actions are inside ResultsStep */}
         {isLast && (
           <Button
             type="button"

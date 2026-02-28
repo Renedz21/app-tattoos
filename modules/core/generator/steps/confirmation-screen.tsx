@@ -6,14 +6,10 @@ import { CheckCircle2, Copy, Check, MessageCircle, Eye } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface ConfirmationScreenProps {
   requestCode: string;
   trackingToken: string;
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function buildWhatsAppUrl(requestCode: string): string {
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
@@ -25,8 +21,6 @@ function buildWhatsAppUrl(requestCode: string): string {
     : "https://wa.me/";
   return `${base}?text=${msg}`;
 }
-
-// ─── Subcomponents ────────────────────────────────────────────────────────────
 
 interface CopyButtonProps {
   text: string;
@@ -43,7 +37,6 @@ function CopyButton({ text, label, className }: CopyButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for browsers without clipboard API
       const el = document.createElement("textarea");
       el.value = text;
       el.style.position = "fixed";
@@ -76,29 +69,10 @@ function CopyButton({ text, label, className }: CopyButtonProps) {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-/**
- * ConfirmationScreen
- *
- * Shown after a successful submit-quote call. Displays:
- *  - A success icon and headline.
- *  - The human-readable requestCode (ZT-XXXX).
- *  - A copiable tracking URL (/seguimiento/<requestCode>) — human-readable
- *    and reconstructible from the code alone. The page also accepts the
- *    trackingToken so existing long-form links keep working.
- *  - A "Seguir por WhatsApp" button (opens wa.me with a pre-filled message).
- *  - A "Ver seguimiento" link that navigates to the tracking page.
- *
- * Pure presentational — all data comes from props.
- */
 export default function ConfirmationScreen({
   requestCode,
   trackingToken,
 }: ConfirmationScreenProps) {
-  // Use the human-readable requestCode in the URL so the user can
-  // reconstruct it from their code alone. The page also accepts
-  // trackingToken, so old links remain valid.
   const trackingPath = `/seguimiento/${requestCode}`;
   const trackingUrl =
     typeof window !== "undefined"
@@ -109,12 +83,9 @@ export default function ConfirmationScreen({
 
   return (
     <div className="flex flex-col items-center gap-6 py-10 text-center">
-      {/* ── Success icon ────────────────────────────────────────────────── */}
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 ring-4 ring-emerald-500/20">
         <CheckCircle2 className="h-10 w-10 text-emerald-500" />
       </div>
-
-      {/* ── Headline ────────────────────────────────────────────────────── */}
       <div className="space-y-1.5">
         <h3 className="font-bebas text-4xl tracking-wide">
           ¡Solicitud enviada!
@@ -124,10 +95,7 @@ export default function ConfirmationScreen({
           cotización.
         </p>
       </div>
-
-      {/* ── Request code card ───────────────────────────────────────────── */}
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-5 space-y-4 text-left shadow-sm">
-        {/* Code */}
         <div className="flex items-center justify-between gap-3">
           <div className="space-y-0.5">
             <p className="font-grotesk text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -141,8 +109,6 @@ export default function ConfirmationScreen({
         </div>
 
         <div className="h-px bg-border" />
-
-        {/* Tracking link */}
         <div className="space-y-1.5">
           <p className="font-grotesk text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Enlace de seguimiento
@@ -160,9 +126,7 @@ export default function ConfirmationScreen({
         </div>
       </div>
 
-      {/* ── Action buttons ──────────────────────────────────────────────── */}
       <div className="flex w-full max-w-sm flex-col gap-3">
-        {/* WhatsApp */}
         <Button
           asChild
           className="w-full font-grotesk font-semibold bg-[#25D366] hover:bg-[#1ebe5d] text-white"
@@ -172,8 +136,6 @@ export default function ConfirmationScreen({
             Seguir por WhatsApp
           </a>
         </Button>
-
-        {/* Tracking page */}
         <Button asChild variant="outline" className="w-full font-grotesk">
           <Link href={trackingPath}>
             <Eye className="h-4 w-4" />
@@ -181,8 +143,6 @@ export default function ConfirmationScreen({
           </Link>
         </Button>
       </div>
-
-      {/* ── Footer note ─────────────────────────────────────────────────── */}
       <p className="font-grotesk text-xs text-muted-foreground max-w-xs">
         Guarda tu código{" "}
         <strong className="text-foreground">{requestCode}</strong> para

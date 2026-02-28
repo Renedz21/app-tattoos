@@ -50,27 +50,3 @@ export const COLOR_OPTIONS = [
     label: "Color",
   },
 ] as const;
-
-export const DISTRICTS = [
-  "SJL",
-  "Comas",
-  "Los Olivos",
-  "Independencia",
-  "Carabayllo",
-  "Rímac",
-  "Cercado de Lima",
-  "Ate",
-  "Santa Anita",
-  "El Agustino",
-  "San Martín de Porres",
-  "Puente Piedra",
-  "Otro",
-] as const;
-
-export const AVAILABILITY_OPTIONS = [
-  "Mañanas (9am - 12pm)",
-  "Tardes (12pm - 5pm)",
-  "Noches (5pm - 9pm)",
-  "Fines de semana",
-  "Flexible",
-] as const;

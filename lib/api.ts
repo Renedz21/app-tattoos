@@ -1,8 +1,3 @@
-/**
- * Typed fetch wrapper used by all client hooks.
- * Keeps fetch calls out of UI components (Clean Code).
- */
-
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
@@ -14,12 +9,14 @@ export class ApiError extends Error {
 }
 
 export async function api<T>(url: string, init?: RequestInit): Promise<T> {
+  const { headers: customHeaders, ...restInit } = init ?? {};
+
   const res = await fetch(url, {
+    ...restInit,
     headers: {
       "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
+      ...(customHeaders ?? {}),
     },
-    ...init,
   });
 
   const json = await res.json().catch(() => null);

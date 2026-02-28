@@ -11,27 +11,9 @@ export async function generateImages(prompt: string, numberOfImages?: number) {
     prompt,
     aspectRatio: "1:1",
     maxImagesPerCall: 2,
-    n: numberOfImages ? numberOfImages : undefined
+    n: numberOfImages ? numberOfImages : undefined,
   });
 
   // image.uint8Array -> listo para subir a R2
   return image.uint8Array;
-}
-
-export async function generateVariants(params: {
-  instruction: string;
-  baseImage: Uint8Array;
-  n: number;
-}) {
-  // Edición: prompt con images[]
-  return Promise.all(
-    Array.from({ length: params.n }, async () => {
-      const { image } = await generateImage({
-        model: google.image(MODEL_ID),
-        prompt: { text: params.instruction, images: [params.baseImage] },
-        aspectRatio: "1:1",
-      });
-      return image.uint8Array;
-    })
-  );
 }

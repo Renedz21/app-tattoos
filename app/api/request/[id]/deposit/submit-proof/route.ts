@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { buildR2PublicUrl } from "@/lib/r2/public-url";
 import { DepositSubmitProofSchema } from "@/modules/schemas/admin";
 import { RequestStatus } from "@/lib/generated/prisma/enums";
 
@@ -30,7 +31,10 @@ export async function POST(
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  if (tr.status !== RequestStatus.QUOTED && tr.status !== RequestStatus.DEPOSIT_PENDING) {
+  if (
+    tr.status !== RequestStatus.QUOTED &&
+    tr.status !== RequestStatus.DEPOSIT_PENDING
+  ) {
     return NextResponse.json(
       { error: "invalid_status", current: tr.status },
       { status: 409 },
@@ -40,8 +44,7 @@ export async function POST(
   const { depositMethod, depositVerificationCode, r2Key, mimeType, sizeBytes } =
     parsed.data;
 
-  const publicBase = process.env.R2_PUBLIC_URL?.replace(/\/$/, "");
-  const publicUrl = publicBase ? `${publicBase}/${r2Key}` : null;
+  const publicUrl = buildR2PublicUrl(r2Key);
 
   const updated = await prisma.tattooRequest.update({
     where: { id },

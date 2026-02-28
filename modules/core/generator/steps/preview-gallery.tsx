@@ -3,42 +3,17 @@
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import type { PreviewItem } from "../hooks/use-tattoo-generation";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface PreviewGalleryProps {
-  /** All generated previews in creation order. */
   previews: PreviewItem[];
-  /** Id of the currently selected preview (shown in the large viewer). */
   selectedId: string | null;
-  /** Called when the user clicks a thumbnail. */
   onSelect: (id: string) => void;
-  /** Whether the user can still generate another preview. */
   canAdd: boolean;
-  /** Called when the user clicks the "+" button to generate a new preview. */
   onAdd: () => void;
-  /** Disables all interactions (e.g. while generating or uploading). */
   disabled?: boolean;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const THUMB_SIZE = "size-16 sm:size-20";
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-/**
- * PreviewGallery
- *
- * Horizontal strip of circular thumbnails representing each AI-generated
- * preview. Matches the reference screenshot:
- *   - Circular images with object-cover.
- *   - Selected thumbnail has a prominent primary-colored ring.
- *   - A "+" button at the end lets the user trigger another generation
- *     (hidden/disabled when the attempt cap is reached).
- *
- * Pure presentational — all state lives in useTattooGeneration.
- */
 export default function PreviewGallery({
   previews,
   selectedId,
@@ -82,16 +57,12 @@ export default function PreviewGallery({
                 className="h-full w-full rounded-full object-cover"
                 draggable={false}
               />
-
-              {/* Subtle overlay on hover for non-selected items */}
               {!isSelected && (
                 <div className="absolute inset-0 rounded-full bg-background/20 opacity-0 transition-opacity group-hover:opacity-100" />
               )}
             </button>
           );
         })}
-
-        {/* Add button — visible only when more attempts are available */}
         {canAdd && (
           <button
             type="button"

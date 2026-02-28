@@ -2,30 +2,27 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin, AdminGuardError } from "@/lib/admin-guard";
+import { withAdmin } from "@/lib/with-admin";
 import { AdminStatusSchema } from "@/modules/schemas/admin";
 import { RequestStatus } from "@/lib/generated/prisma/enums";
 
 const VALID_TRANSITIONS: Record<string, RequestStatus[]> = {
   [RequestStatus.SENT]: [RequestStatus.QUOTED, RequestStatus.EXPIRED],
-  [RequestStatus.QUOTED]: [RequestStatus.DEPOSIT_PENDING, RequestStatus.EXPIRED],
-  [RequestStatus.DEPOSIT_PENDING]: [RequestStatus.APPOINTMENT_CONFIRMED, RequestStatus.EXPIRED],
-  [RequestStatus.APPOINTMENT_CONFIRMED]: [RequestStatus.FINISHED, RequestStatus.EXPIRED],
+  [RequestStatus.QUOTED]: [
+    RequestStatus.DEPOSIT_PENDING,
+    RequestStatus.EXPIRED,
+  ],
+  [RequestStatus.DEPOSIT_PENDING]: [
+    RequestStatus.APPOINTMENT_CONFIRMED,
+    RequestStatus.EXPIRED,
+  ],
+  [RequestStatus.APPOINTMENT_CONFIRMED]: [
+    RequestStatus.FINISHED,
+    RequestStatus.EXPIRED,
+  ],
 };
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    await requireAdmin();
-  } catch (err) {
-    if (err instanceof AdminGuardError) {
-      return NextResponse.json({ error: err.code }, { status: err.status });
-    }
-    throw err;
-  }
-
+export const POST = withAdmin<{ id: string }>(async (req, { params }) => {
   const { id } = await params;
 
   const json = await req.json().catch(() => null);
@@ -97,4 +94,4 @@ export async function POST(
   });
 
   return NextResponse.json(updated);
-}
+});

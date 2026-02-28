@@ -1,57 +1,12 @@
 "use client";
 
-import {
-  ColorMode,
-  RequestStatus,
-  TattooSize,
-  TattooStyle,
-} from "@/lib/generated/prisma/enums";
+import { getStatusLabel, getStyleLabel } from "@/lib/labels";
+import { RequestStatus, TattooStyle } from "@/lib/generated/prisma/enums";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import Link from "next/link";
 
-export const getStyleLabel = (style: TattooStyle) => {
-  switch (style) {
-    case TattooStyle.BLACKWORK:
-      return "Blackwork";
-    case TattooStyle.FINE_LINE:
-      return "Fine Line";
-    case TattooStyle.LETTERING:
-      return "Lettering";
-    case TattooStyle.MINIMAL:
-      return "Minimal";
-    case TattooStyle.OTHER:
-      return "Otro";
-    case TattooStyle.REALISM:
-      return "Realismo";
-    case TattooStyle.TRADITIONAL:
-      return "Tradicional";
-    default:
-      return "Desconocido";
-  }
-};
-
-export const getStatusLabel = (status: RequestStatus) => {
-  switch (status) {
-    case RequestStatus.APPOINTMENT_CONFIRMED:
-      return "Reserva Confirmada";
-    case RequestStatus.DEPOSIT_PENDING:
-      return "Deposito Pendiente";
-    case RequestStatus.EXPIRED:
-      return "Vencido";
-    case RequestStatus.FINISHED:
-      return "Finalizado";
-    case RequestStatus.QUOTED:
-      return "Cotizado";
-    case RequestStatus.SENT:
-      return "Enviado";
-    default:
-      return "Desconocido";
-  }
-};
-
 // This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type RequestTattoo = {
   status: RequestStatus | null;
   requestCode: string | null;
@@ -81,19 +36,14 @@ export const columns: ColumnDef<RequestTattoo>[] = [
   {
     accessorKey: "style",
     header: "Estilo",
-    cell: ({ row }) => {
-      const style = row.getValue("style");
-      const label = getStyleLabel(style as TattooStyle);
-      return label;
-    },
+    cell: ({ row }) => getStyleLabel(row.getValue("style") as TattooStyle),
   },
   {
     accessorKey: "status",
     header: "Estado",
     cell: ({ row }) => {
-      const status = row.getValue("status");
-      const label = getStatusLabel(status as RequestStatus);
-      return label;
+      const status = row.getValue<RequestStatus | null>("status");
+      return status ? getStatusLabel(status) : "—";
     },
   },
   {
