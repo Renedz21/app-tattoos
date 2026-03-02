@@ -21,20 +21,12 @@ export async function POST(
     );
   }
 
-  const {
-    fullName,
-    whatsapp,
-    district,
-    availability,
-    extraComments,
-    r2Key,
-    mimeType,
-    sizeBytes,
-  } = parsed.data;
+  const { district, availability, extraComments, r2Key, mimeType, sizeBytes } =
+    parsed.data;
 
   const tr = await prisma.tattooRequest.findUnique({
     where: { id },
-    select: { id: true, status: true, trackingToken: true },
+    select: { id: true, status: true, trackingToken: true, whatsappE164: true },
   });
 
   if (!tr) {
@@ -43,6 +35,11 @@ export async function POST(
 
   if (tr.status === RequestStatus.SENT || tr.status === RequestStatus.QUOTED) {
     return NextResponse.json({ error: "already_submitted" }, { status: 409 });
+  }
+
+  // Guard para requests legacy sin WhatsApp (creados antes de este cambio)
+  if (!tr.whatsappE164) {
+    return NextResponse.json({ error: "whatsapp_required" }, { status: 422 });
   }
 
   const publicUrl = buildR2PublicUrl(r2Key);
@@ -66,8 +63,6 @@ export async function POST(
       selectedImagePublicUrl: publicUrl,
       selectedImageMimeType: mimeType,
       selectedImageSizeBytes: sizeBytes,
-      fullName: fullName.trim(),
-      whatsappE164: whatsapp.replace(/[\s\-().]/g, ""),
       district: district.trim(),
       availability: availability.trim(),
       extraComments: extraComments?.trim() ?? null,

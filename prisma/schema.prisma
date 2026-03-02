@@ -115,7 +115,8 @@ model TattooRequest {
   size        TattooSize  @default(OTHER)
   sizeNotes   String?
   colorMode   ColorMode   @default(BLACK_AND_GREY)
-  detailLevel Int         @default(3)
+  detailLevel     Int         @default(3)
+  generationCount Int         @default(0)
 
   specialInstructions String?
   finalPrompt         String?

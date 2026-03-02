@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 2;
 
 export type PreviewItem = {
   id: string;
@@ -65,7 +65,8 @@ export function useTattooGeneration(
       if (state.previews.length >= MAX_ATTEMPTS) {
         setState((s) => ({
           ...s,
-          error: `Alcanzaste el máximo de ${MAX_ATTEMPTS} intentos.`,
+          error:
+            "Alcanzaste el límite de 2 diseños para esta solicitud. Escríbenos por WhatsApp para continuar.",
         }));
         return;
       }
@@ -107,10 +108,16 @@ export function useTattooGeneration(
           };
         });
       } catch (err: unknown) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : "Error al generar el diseño. Intenta de nuevo.";
+        let message = "Error al generar el diseño. Intenta de nuevo.";
+
+        if (err instanceof ApiError && err.status === 403) {
+          const body = err.body as { message?: string } | null;
+          message =
+            body?.message ??
+            "Alcanzaste el límite de 2 diseños para esta solicitud. Escríbenos por WhatsApp para continuar.";
+        } else if (err instanceof Error) {
+          message = err.message;
+        }
 
         setState((s) => ({
           ...s,

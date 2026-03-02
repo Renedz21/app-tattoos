@@ -53,7 +53,8 @@ export const PresignSelectedSchema = z.object({
 });
 export type PresignSelectedInput = z.infer<typeof PresignSelectedSchema>;
 
-export const QuoteFormSchema = z.object({
+// Schema para capturar contacto antes de crear el request
+export const ContactSchema = z.object({
   fullName: z
     .string()
     .trim()
@@ -66,6 +67,18 @@ export const QuoteFormSchema = z.object({
       /^\+?[0-9\s\-().]{7,20}$/,
       "Ingresa un número de WhatsApp válido (ej: +51 987 654 321)",
     ),
+});
+export type ContactInput = z.infer<typeof ContactSchema>;
+
+// Schema para crear el request: Step1 + contacto
+export const CreateRequestSchema = z.object({
+  ...Step1Schema.shape,
+  ...ContactSchema.shape,
+});
+export type CreateRequestInput = z.infer<typeof CreateRequestSchema>;
+
+// QuoteForm ya no pide nombre ni WhatsApp (se capturan al inicio)
+export const QuoteFormSchema = z.object({
   district: z
     .string()
     .trim()

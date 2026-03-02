@@ -125,31 +125,6 @@ export default function QuoteForm({
         </div>
         <Field>
           <FieldLabel>
-            Nombre completo <span className="text-destructive">*</span>
-          </FieldLabel>
-          <Input
-            {...register("fullName")}
-            placeholder="Ej: Valentina Torres"
-            autoComplete="name"
-            disabled={isBusy}
-          />
-          {errors.fullName && <FieldError errors={[errors.fullName]} />}
-        </Field>
-        <Field>
-          <FieldLabel>
-            WhatsApp <span className="text-destructive">*</span>
-          </FieldLabel>
-          <Input
-            {...register("whatsapp")}
-            type="tel"
-            placeholder="Ej: +51 987 654 321"
-            autoComplete="tel"
-            disabled={isBusy}
-          />
-          {errors.whatsapp && <FieldError errors={[errors.whatsapp]} />}
-        </Field>
-        <Field>
-          <FieldLabel>
             Distrito <span className="text-destructive">*</span>
           </FieldLabel>
           <Input

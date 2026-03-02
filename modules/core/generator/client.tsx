@@ -6,6 +6,7 @@ import BasicStep from "./steps/basic-step";
 import ReferencesStep from "./steps/references-step";
 import ResultsStep from "./steps/results-step";
 import StepIndicator from "./steps/step-indicator";
+import ContactModal from "./steps/contact-modal";
 import { Button } from "../components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -20,13 +21,11 @@ export default function GeneratorClient() {
     isLast,
     isTransitioning,
     apiError,
+    showContactModal,
+    contactError,
+    isContactSubmitting,
+    handleContactSubmit,
   } = useGeneratorForm();
-
-  {
-    apiError && (
-      <p className="text-sm text-destructive mb-2">{apiError}</p>
-    )
-  }
 
   return (
     <FormProvider {...form}>
@@ -37,12 +36,15 @@ export default function GeneratorClient() {
         {step === 3 && <ResultsStep requestId={requestId} />}
       </div>
       <div className="mt-10">
+        {apiError && (
+          <p className="mb-2 text-sm text-destructive">{apiError}</p>
+        )}
         {isFirst && (
           <Button
             type="button"
             onClick={goNext}
             disabled={isTransitioning}
-            className="w-full font-grotesk font-semibold "
+            className="w-full font-grotesk font-semibold"
             size="lg"
           >
             {isTransitioning ? (
@@ -93,6 +95,13 @@ export default function GeneratorClient() {
           </Button>
         )}
       </div>
+
+      <ContactModal
+        isOpen={showContactModal}
+        isSubmitting={isContactSubmitting}
+        error={contactError}
+        onSubmit={handleContactSubmit}
+      />
     </FormProvider>
   );
 }
