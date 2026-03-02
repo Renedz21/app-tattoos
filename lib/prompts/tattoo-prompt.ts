@@ -4,7 +4,7 @@ export function buildTattooPrompt(step1: Step1Input, step2?: Step2Input) {
   // Step1Schema enums are FINE_LINE | BLACKWORK | REALISM | TRADITIONAL |
   // LETTERING | MINIMAL and SMALL | MEDIUM | LARGE — no "OTHER" variant.
   const style = step1.style;
-  const size = step1.sizeNotes ?? step1.size;
+  const size = step1.size;
 
   return [
     "Generate a tattoo design image.",
