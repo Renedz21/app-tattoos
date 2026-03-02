@@ -3,13 +3,10 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import prisma from "./prisma";
-/**
- * Sends the magic link to the user's email.
- *
- * DEV:  Logs the link to the console so you can click it without a real mailer.
- * PROD: TODO – replace with a real email provider (Resend, Postmark, SES, etc.)
- *       e.g. await resend.emails.send({ from, to: email, subject, html })
- */
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY!);
+
 async function sendMagicLinkEmail({
   email,
   url,
@@ -38,17 +35,12 @@ async function sendMagicLinkEmail({
     return;
   }
 
-  // TODO: integrate real email provider for production
-  // Example with Resend:
-  //
-  // import { Resend } from "resend";
-  // const resend = new Resend(process.env.RESEND_API_KEY);
-  // await resend.emails.send({
-  //   from: "noreply@yourdomain.com",
-  //   to: email,
-  //   subject: "Tu enlace de acceso",
-  //   html: `<p>Haz clic <a href="${url}">aquí</a> para ingresar al panel.</p>`,
-  // });
+  await resend.emails.send({
+    from: "noreply@yourdomain.com",
+    to: email,
+    subject: "Tu enlace de acceso",
+    html: `<p>Haz clic <a href="${url}">aquí</a> para ingresar al panel.</p>`,
+  });
   throw new Error(
     "[auth] sendMagicLinkEmail: no email provider configured for production.",
   );
