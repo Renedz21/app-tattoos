@@ -227,7 +227,7 @@ export default async function SeguimientoPage({ params }: PageProps) {
   const completedSteps = timeline.filter((e) => e.doneAt !== null).length;
 
   return (
-    <div className="min-h-dvh py-8">
+    <div className="min-h-dvh py-8 pt-22">
       <div className="container mx-auto max-w-2xl space-y-8">
         <Link
           href="/generator"

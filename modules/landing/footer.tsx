@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-border/30 bg-ink-light">
       <div className="container mx-auto px-4 py-12 md:py-16 lg:px-6">
-        <div className="grid justify-items-center gap-10 md:grid-cols-3">
+        <div className="grid lg:justify-items-center gap-10 md:grid-cols-3">
           {/* Brand */}
           <div>
             <span className="font-bebas text-3xl tracking-wider bg-linear-to-r from-primary to-tertiary text-transparent bg-clip-text">

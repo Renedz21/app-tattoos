@@ -3,7 +3,7 @@ import GeneratorClient from "@/modules/core/generator/client";
 
 export default function GeneratorPage() {
   return (
-    <div className="min-h-dvh py-8">
+    <div className="min-h-dvh py-8 pt-20">
       <div className="container mx-auto max-w-2xl">
         <div className="text-center mb-8">
           <HeaderText
