@@ -36,7 +36,7 @@ async function sendMagicLinkEmail({
   }
 
   await resend.emails.send({
-    from: "noreply@yourdomain.com",
+    from: "noreply@mail.inkyra.app",
     to: email,
     subject: "Tu enlace de acceso",
     html: `<p>Haz clic <a href="${url}">aquí</a> para ingresar al panel.</p>`,
