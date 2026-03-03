@@ -76,7 +76,7 @@ export async function POST(
   }
 
   try {
-    const uint8 = await generateImages(prompt, 1);
+    const uint8 = await generateImages(prompt);
 
     // Incrementar el contador de generaciones
     await prisma.tattooRequest.update({

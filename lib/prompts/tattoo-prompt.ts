@@ -1,23 +1,22 @@
 import { Step1Input, Step2Input } from "@/modules/schemas/tattoo";
 
 export function buildTattooPrompt(step1: Step1Input, step2?: Step2Input) {
-  // Step1Schema enums are FINE_LINE | BLACKWORK | REALISM | TRADITIONAL |
-  // LETTERING | MINIMAL and SMALL | MEDIUM | LARGE — no "OTHER" variant.
   const style = step1.style;
-  const size = step1.size;
+  const color = step1.colorMode === "COLOR" ? "a color" : "en blanco y negro";
+  const detail =
+    step1.detailLevel <= 2
+      ? "nivel de detalle bajo"
+      : step1.detailLevel === 3
+        ? "nivel de detalle medio"
+        : "nivel de detalle alto";
 
-  return [
-    "Generate a tattoo design image.",
-    `Style: ${style}.`,
-    `Body placement: ${step1.bodyZone}.`,
-    `Size: ${size}.`,
-    `Color: ${step1.colorMode === "COLOR" ? "color" : "black and grey"}.`,
-    `Detail level (1-5): ${step1.detailLevel}.`,
-    step2?.specialInstructions
-      ? `Extra instructions: ${step2.specialInstructions}.`
-      : null,
-    "No text. No watermark text. One image.",
-  ]
-    .filter(Boolean)
-    .join("\n");
+  const coreIdea = step2?.specialInstructions
+    ? step2.specialInstructions
+    : "Crea un concepto de tatuaje visualmente impactante.";
+
+  return `
+${coreIdea}
+Transforma esta idea en un diseño de tatuaje profesional estilo ${style.toLowerCase()}, pensado para ${step1.bodyZone.toLowerCase()}, tamaño ${step1.size.toLowerCase()}, ${color}, con ${detail}. La imagen debe ser una única composición cohesiva en un solo lienzo.
+Debe estar diseñada específicamente como un tatuaje real. La imagen final debe contener únicamente el arte del tatuaje. No incluir texto, letras, tipografía, frases, descripciones, etiquetas, elementos de interfaz, mockups, bordes ni marcas de agua. Genera exactamente una sola imagen.
+`.trim();
 }
