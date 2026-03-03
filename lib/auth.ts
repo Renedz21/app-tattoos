@@ -15,35 +15,39 @@ async function sendMagicLinkEmail({
   token: string;
   url: string;
 }) {
-  if (process.env.NODE_ENV !== "production") {
-    console.log(
-      [
-        "",
-        "┌─────────────────────────────────────────────────────────┐",
-        "│               ✉  MAGIC LINK (DEV MODE)                  │",
-        "├─────────────────────────────────────────────────────────┤",
-        `│  To : ${email.padEnd(51)}│`,
-        `│  URL: ${url.slice(0, 51).padEnd(51)}│`,
-        url.length > 51 ? `│       ${url.slice(51, 102).padEnd(51)}│` : null,
-        url.length > 102 ? `│       ${url.slice(102).padEnd(51)}│` : null,
-        "└─────────────────────────────────────────────────────────┘",
-        "",
-      ]
-        .filter(Boolean)
-        .join("\n"),
-    );
-    return;
-  }
+  try {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        [
+          "",
+          "┌─────────────────────────────────────────────────────────┐",
+          "│               ✉  MAGIC LINK (DEV MODE)                  │",
+          "├─────────────────────────────────────────────────────────┤",
+          `│  To : ${email.padEnd(51)}│`,
+          `│  URL: ${url.slice(0, 51).padEnd(51)}│`,
+          url.length > 51 ? `│       ${url.slice(51, 102).padEnd(51)}│` : null,
+          url.length > 102 ? `│       ${url.slice(102).padEnd(51)}│` : null,
+          "└─────────────────────────────────────────────────────────┘",
+          "",
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      );
+      return;
+    }
 
-  await resend.emails.send({
-    from: "noreply@mail.inkyra.app",
-    to: email,
-    subject: "Tu enlace de acceso",
-    html: `<p>Haz clic <a href="${url}">aquí</a> para ingresar al panel.</p>`,
-  });
-  throw new Error(
-    "[auth] sendMagicLinkEmail: no email provider configured for production.",
-  );
+    await resend.emails.send({
+      from: "noreply@mail.inkyra.app",
+      to: email,
+      subject: "Tu enlace de acceso",
+      html: `<p>Haz clic <a href="${url}">aquí</a> para ingresar al panel.</p>`,
+    });
+    throw new Error(
+      "[auth] sendMagicLinkEmail: no email provider configured for production.",
+    );
+  } catch (e) {
+    console.log("[auth] sendMagicLinkEmail error", e);
+  }
 }
 
 export const auth = betterAuth({
