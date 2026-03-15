@@ -1,4 +1,5 @@
 import {
+  ColorMode,
   RequestStatus,
   TattooSize,
   TattooStyle,
@@ -39,4 +40,13 @@ export const SIZE_LABELS: Record<TattooSize, string> = {
 
 export function getSizeLabel(size: TattooSize): string {
   return SIZE_LABELS[size] ?? "Desconocido";
+}
+
+export const COLOR_MODE_LABELS: Record<ColorMode, string> = {
+  [ColorMode.BLACK_AND_GREY]: "Blanco y Negro",
+  [ColorMode.COLOR]: "Color",
+};
+
+export function getColorModeLabel(mode: ColorMode): string {
+  return COLOR_MODE_LABELS[mode] ?? "Desconocido";
 }

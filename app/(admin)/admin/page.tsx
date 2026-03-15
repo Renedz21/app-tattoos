@@ -4,7 +4,8 @@ import { getServerSession } from "@/lib/session";
 import { isAdminEmail } from "@/lib/admin-allowlist";
 import { RequestStatus } from "@/lib/generated/prisma/enums";
 import prisma from "@/lib/prisma";
-import { Image, LayoutDashboard } from "lucide-react";
+import { Image as ImageIcon, LayoutDashboard } from "lucide-react";
+import PortfolioTab from "@/modules/admin/components/portfolio-tab";
 import {
   Tabs,
   TabsContent,
@@ -66,9 +67,8 @@ export default async function AdminPage({ searchParams }: Props) {
           <TabsTrigger
             value="portfolio"
             className="font-body gap-2 data-[state=active]:text-primary"
-            disabled
           >
-            <Image size={16} /> Portafolio
+            <ImageIcon size={16} /> Portafolio
           </TabsTrigger>
         </TabsList>
         <TabsContent value="leads" className="space-y-6">
@@ -80,7 +80,9 @@ export default async function AdminPage({ searchParams }: Props) {
             <DataTable columns={columns} data={data} />
           </div>
         </TabsContent>
-        <TabsContent value="portfolio">Proximamente</TabsContent>
+        <TabsContent value="portfolio">
+          <PortfolioTab />
+        </TabsContent>
       </Tabs>
     </>
   );
