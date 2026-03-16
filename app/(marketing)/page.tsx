@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import Hero from "@/modules/landing/hero";
 import Portfolio from "@/modules/landing/portfolio";
