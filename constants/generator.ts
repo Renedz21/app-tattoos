@@ -1,10 +1,12 @@
 export const STYLE_OPTIONS = [
-  { value: "FINE_LINE", label: "Fine Line", icon: "✦" },
-  { value: "BLACKWORK", label: "Blackwork", icon: "◼" },
-  { value: "REALISM", label: "Realismo", icon: "◎" },
-  { value: "TRADITIONAL", label: "Tradicional", icon: "⚓" },
-  { value: "LETTERING", label: "Lettering", icon: "𝐴" },
-  { value: "MINIMAL", label: "Minimal", icon: "○" },
+  { value: "COVER_UP", label: "Cover Up", icon: "↺" },
+  { value: "RELIGIOUS", label: "Religiosos", icon: "✝" },
+  { value: "PERSONALIZED", label: "Personalizados", icon: "✏" },
+  { value: "DOTWORK", label: "Puntillismo", icon: "⠿" },
+  { value: "SURREALISM", label: "Rarismo", icon: "◌" },
+  { value: "MISCELLANEOUS", label: "Misceláneas", icon: "◈" },
+  { value: "WATERCOLOR", label: "Water Color", icon: "◇" },
+  { value: "GEOMETRIC", label: "Geométricos", icon: "△" },
 ] as const;
 
 export const BODY_PARTS = [

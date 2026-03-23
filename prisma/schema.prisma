@@ -71,13 +71,14 @@ model Verification {
 }
 
 enum TattooStyle {
-  FINE_LINE
-  BLACKWORK
-  REALISM
-  TRADITIONAL
-  LETTERING
-  MINIMAL
-  OTHER
+  COVER_UP
+  RELIGIOUS
+  PERSONALIZED
+  DOTWORK
+  SURREALISM
+  MISCELLANEOUS
+  WATERCOLOR
+  GEOMETRIC
 }
 
 enum TattooSize {
@@ -109,7 +110,7 @@ model TattooRequest {
   status RequestStatus?
 
   title       String?
-  style       TattooStyle @default(OTHER)
+  style       TattooStyle @default(MISCELLANEOUS)
   styleOther  String?
   bodyZone    String
   size        TattooSize  @default(OTHER)
@@ -180,7 +181,7 @@ model PortfolioItem {
 
   title       String
   description String?
-  style       TattooStyle @default(OTHER)
+  style       TattooStyle @default(MISCELLANEOUS)
   bodyZone    String?
   colorMode   ColorMode   @default(BLACK_AND_GREY)
 

@@ -6,13 +6,14 @@ import {
 } from "@/lib/generated/prisma/enums";
 
 export const STYLE_LABELS: Record<TattooStyle, string> = {
-  [TattooStyle.FINE_LINE]: "Fine Line",
-  [TattooStyle.BLACKWORK]: "Blackwork",
-  [TattooStyle.REALISM]: "Realismo",
-  [TattooStyle.TRADITIONAL]: "Tradicional",
-  [TattooStyle.LETTERING]: "Lettering",
-  [TattooStyle.MINIMAL]: "Minimalista",
-  [TattooStyle.OTHER]: "Otro",
+  [TattooStyle.COVER_UP]: "Cover Up",
+  [TattooStyle.RELIGIOUS]: "Religiosos",
+  [TattooStyle.PERSONALIZED]: "Personalizados",
+  [TattooStyle.DOTWORK]: "Puntillismo",
+  [TattooStyle.SURREALISM]: "Rarismo",
+  [TattooStyle.MISCELLANEOUS]: "Misceláneas",
+  [TattooStyle.WATERCOLOR]: "Water Color",
+  [TattooStyle.GEOMETRIC]: "Geométricos",
 };
 
 export function getStyleLabel(style: TattooStyle): string {
