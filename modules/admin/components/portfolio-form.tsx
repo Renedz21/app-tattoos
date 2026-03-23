@@ -49,9 +49,7 @@ export default function PortfolioForm({ editItem, onSaved, onCancel }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [existingImages, setExistingImages] = useState(
-    editItem?.images ?? [],
-  );
+  const [existingImages, setExistingImages] = useState(editItem?.images ?? []);
   const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 
   const form = useForm<PortfolioItemInput>({
@@ -59,7 +57,7 @@ export default function PortfolioForm({ editItem, onSaved, onCancel }: Props) {
     mode: "onTouched",
     defaultValues: {
       title: editItem?.title ?? "",
-      style: editItem?.style ?? TattooStyle.OTHER,
+      style: editItem?.style ?? TattooStyle.COVER_UP,
       bodyZone: editItem?.bodyZone ?? "",
       colorMode: (editItem?.colorMode as ColorMode) ?? ColorMode.BLACK_AND_GREY,
       description: editItem?.description ?? "",
@@ -298,9 +296,7 @@ export default function PortfolioForm({ editItem, onSaved, onCancel }: Props) {
                 rows={3}
                 disabled={isBusy}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
